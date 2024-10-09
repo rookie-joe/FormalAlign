@@ -20,6 +20,7 @@ import re
 import random
 import argparse
 import os
+import string
 
 def modify_constant(expression):
     """
@@ -28,7 +29,7 @@ def modify_constant(expression):
     constants = re.findall(r'(?<!\\u)\b\d+\b', expression)
     if constants:
         chosen_constant = random.choice(constants)
-        new_constant = str(int(chosen_constant) + 1)
+        new_constant = str(int(chosen_constant) + random.randint(1, 100))
         expression = re.sub(r'(?<!\\u)\b' + re.escape(chosen_constant) + r'\b', new_constant, expression, 1)
     return expression
 
@@ -39,7 +40,7 @@ def modify_exponent(expression):
     exponents = re.findall(r'\^(\d+)', expression)
     if exponents:
         chosen_exponent = random.choice(exponents)
-        new_exponent = str(int(chosen_exponent) + 1)
+        new_exponent = str(int(chosen_exponent) + random.randint(1, 10))
         expression = expression.replace(f'^{chosen_exponent}', f'^{new_exponent}', 1)
     return expression
 
@@ -47,42 +48,59 @@ def introduce_variable(expression):
     """
     Introduce a new random variable in the declaration of variables.
     """
-    variable_declarations = re.findall(r'\(([^)]+ : \\u[0-9a-fA-F]+)\)', expression)
+    # Find all variable declarations in the form of (variables : ℝ)
+    variable_declarations = re.findall(r'([^:]+ : [^\s]+)', expression)
     if variable_declarations:
+        # Choose a random variable declaration to modify
         chosen_declaration = random.choice(variable_declarations)
-        variable_type = re.search(r': (\\u[0-9a-fA-F]+)', chosen_declaration).group(1)
-        new_variable = f'v{random.randint(1, 100)}'
-        new_declaration = f'{chosen_declaration}, {new_variable} : {variable_type}'
-        expression = expression.replace(chosen_declaration, new_declaration, 1)
+        # Extract the variable type, e.g., ℝ
+        variable_type_match = re.search(r'[^\s]+$', chosen_declaration)
+        if variable_type_match:
+            variable_type = variable_type_match.group(0)
+            # Extract existing variable names
+            existing_variables = re.findall(r'\b[a-zA-Z]\w*\b', chosen_declaration)
+            # Find a new variable name not in existing variables
+            new_variable = None
+            while new_variable is None or new_variable in existing_variables:
+                new_variable = random.choice(string.ascii_lowercase)
+            # Introduce the new variable
+            new_declaration = f'({new_variable} : {variable_type})'
+            expression = expression.replace(chosen_declaration, f'{chosen_declaration}\n{new_declaration}')
     return expression
 
 def change_variable_type(expression):
     """
     Change the type of one variable in the declaration to a randomly chosen type.
     """
-    available_types = [
-        '\\u2115', '\\u2124', '\\u211A', '\\u211D', '\\u1D539', '\\u1D5A', '\\u1D5B',
-        '\\u03B1', '\\u00D7', '\\u03B2', '\\u2112', '\\u1D54E'
-    ]
-    variable_declarations = re.findall(r'\(([^)]+ : \\u[0-9a-fA-F]+)\)', expression)
+    available_types = ['ℕ', 'ℤ', 'ℚ', 'ℝ', '𝔹', '𝕊', '𝕋', 'α', '×', 'β', 'ℒ', '𝕎']
+    
+    # Find all variable declarations in the form of (variables : type)
+    variable_declarations = re.findall(r'\(([^:]+ : [^\s]+)\)', expression)
+    
     if variable_declarations:
+        # Choose one of the variable declarations to modify
         chosen_declaration = random.choice(variable_declarations)
-        current_type = re.search(r': (\\u[0-9a-fA-F]+)', chosen_declaration).group(1)
-        new_variable_type = current_type
-        while new_variable_type == current_type:
-            new_variable_type = random.choice(available_types)
-        modified_declaration = chosen_declaration.replace(current_type, new_variable_type)
-        expression = expression.replace(chosen_declaration, modified_declaration)
+        current_type_match = re.search(r': ([^\s]+)', chosen_declaration)
+        if current_type_match:
+            current_type = current_type_match.group(1)
+            new_variable_type = current_type
+            # Randomly pick a new type for the variables in the declaration
+            while new_variable_type == current_type:
+                new_variable_type = random.choice(available_types)
+            # Modify the type of all variables in this declaration (while other declarations are unchanged)
+            modified_declaration = chosen_declaration.replace(current_type, new_variable_type)
+            expression = expression.replace(chosen_declaration, modified_declaration)
     return expression
+
 
 def modify_equality(expression):
     """
-    Change all instances of \u2260 to = in the given expression, and vice versa
+    Change all instances of ≠ to = in the given expression, and vice versa.
     """
-    if '\u2260' in expression:
-        expression = expression.replace('\u2260', '=')
+    if '≠' in expression:
+        expression = expression.replace('≠', '=')
     elif '=' in expression:
-        expression = expression.replace('=', '\u2260')
+        expression = expression.replace('=', '≠')
     return expression
 
 def modify_unpaired(responses, current_response):
@@ -167,13 +185,13 @@ def main(input_file, output_path, seed):
     output_file = os.path.join(output_path, os.path.basename(input_file))
 
     # Open input data and modify
-    with open(input_file, 'r') as f:
+    with open(input_file, 'r',encoding='utf-8') as f:
         data = json.load(f)
 
     modified_data = modify_dataset(data, seed)
 
-    with open(output_file, 'w') as f:
-        json.dump(modified_data, f, indent=2)
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(modified_data, f, ensure_ascii=False, indent=2)
 
     print(f"Dataset modified and saved to {output_file}")
 
