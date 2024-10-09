@@ -13,11 +13,11 @@ FormalAlign addresses the challenge of ensuring semantic alignment between infor
 ./
 └── data
     ├── forml4
-    │   ├── basic_misalignment.json
-    │   └── random_misalignment.json
+    │   ├── misalignment
+    │   └── alignment
     └── minif2f
-        ├── test_misalignment.json
-        └── valid_misalignment.json
+        ├── misalignment
+        └── alignment
 ```
 
 ### Datasets
@@ -25,12 +25,22 @@ FormalAlign addresses the challenge of ensuring semantic alignment between infor
 The repository contains misalignment data for two main datasets:
 
 1. **FormL4**:
-   - `basic_misalignment.json`: Contains basic misalignment examples from FormL4.
-   - `random_misalignment.json`: Contains randomly sampled misalignment examples from FormL4.
+   - `alignment` folder: The basic and random test sets downloaded from [FormL4](https://github.com/rookie-joe/PDA/tree/main/data/FormL4); 
+      - `python format_forml4.py` was run to format the imported data files for misalignement creation.
+   - `misalignment` folder
+      - `formatted_basic_test.json`: Contains basic misalignment examples from FormL4.
+      - `formatted_random_test.json`: Contains randomly sampled misalignment examples from FormL4.
 
 2. **MiniF2F**:
-   - `test_misalignment.json`: Contains misalignment examples from the MiniF2F test set.
-   - `valid_misalignment.json`: Contains misalignment examples from the MiniF2F validation set.
+   - `alignment` folder: the informal-formal data imported from minif2f;
+   - `misalignment` folder
+      - `test_misalignment.json`: Contains misalignment examples from the MiniF2F test set.
+      - `valid_misalignment.json`: Contains misalignment examples from the MiniF2F validation set.
+
+Run the following example code to replicate the creation of misalignment cases (e.g., FormL4-Basic):
+```
+python create_misalign.py --input_file forml4/alignment/formatted_basic_test.json --output_path forml4/misalignment --seed 42
+```
 
 ## Key Features
 
