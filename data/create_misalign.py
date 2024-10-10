@@ -22,17 +22,23 @@ import random
 import argparse
 import os
 import string
+from collections import Counter
 
 def modify_constant(expression):
     """
     Modify a constant in the given mathematical expression.
     """
-    constants = re.findall(r'(?<!\\u)\b\d+\b', expression)
+    # Extract the part after "theorem xxxxx :"
+    theorem_parts = expression.split(':', 1)
+    theorem_body = theorem_parts[1]
+
+    constants = re.findall(r'(?<!\\u)\b\d+\b', theorem_body)
     if constants:
         chosen_constant = random.choice(constants)
         new_constant = str(int(chosen_constant) + random.randint(1, 100))
-        expression = re.sub(r'(?<!\\u)\b' + re.escape(chosen_constant) + r'\b', new_constant, expression, 1)
-    return expression
+        theorem_body = re.sub(r'(?<!\\u)\b' + re.escape(chosen_constant) + r'\b', new_constant, theorem_body, 1)
+    modified_expression = theorem_parts[0] + ':' + theorem_body
+    return modified_expression
 
 def modify_exponent(expression):
     """
@@ -108,10 +114,10 @@ def introduce_variable(expression):
         print('not in format theorem xx :')
         return expression  # No ":" found, return original expression
     
-    theorem_body = theorem_parts[1].strip()
+    theorem_body = theorem_parts[1]
     
     # Find all variable declarations
-    declarations = re.findall(r'(?<!\w)([a-zA-Z]\w*(?:\s+[a-zA-Z]\w*)*)\s*:\s*([^\s,()]+)', theorem_body)
+    declarations = re.findall(r'(?<!\w)([a-zA-Z0-9]\w*(?:\s+[a-zA-Z0-9]\w*)*)\s*:\s*([^\s,()]+)', theorem_body)
     
     if declarations:
         # Choose a random declaration
@@ -132,16 +138,14 @@ def introduce_variable(expression):
             theorem_body = theorem_body.replace(old_declaration, new_declaration, 1)
 
     modified_expression = f"{theorem_parts[0]}:{theorem_body}" + ':=' + parts[1]
-    print(modified_expression)
 
-    # Reconstruct the full expression
     return modified_expression
 
 def change_variable_type(expression):
     """
     Change the type of one variable in the declaration to a randomly chosen type.
     """
-    available_types = ['ℕ', 'ℤ', 'ℚ', 'ℝ', '𝔹', '𝕊', '𝕋', 'α', '×', 'β', 'ℒ', '𝕎']
+    available_types = ['ℕ', 'ℤ', 'ℚ', 'ℝ', '𝔹', '𝕊', '𝕋', 'α', '×', 'β', 'ℒ', '𝕎', '𝕌', '𝕍', '𝕏', '𝕐', '𝕄', '𝕀', '𝕆']
     
     # Find all variable declarations in the form of (variables : type)
     variable_declarations = re.findall(r'\(([^:]+ : [^\s]+)\)', expression)
@@ -222,47 +226,52 @@ def modify_dataset(data, seed):
     random.seed(seed)
     modified_data = []
     modification_types = ['constant', 'exponent', 'variable_new', 'variable_type', 'equality', 'unpaired']
-    strategy_counts = {strategy: 0 for strategy in modification_types}
+    strategy_counts = Counter()  # Use Counter for easier counting
     total_samples = len(data)
-
-    # Collect all responses for the 'unpaired' strategy
     all_responses = [output["response"] for sample in data for output in sample["outputs"]]
 
-    for sample in data:
+    # Pre-allocate modifications to ensure even distribution
+    num_modifications = 20
+    # modifications_per_theorem = [modification_types[:] for _ in range(total_samples)]  # List of lists
+    # modifications_per_theorem = [modification_types[:] * (num_modifications // len(modification_types) + 1) for _ in range(total_samples)]
+    # for i in range(total_samples):
+    #     random.shuffle(modifications_per_theorem[i]) # Shuffle to randomize order
+    modifications_per_theorem = [modification_types[:] * (num_modifications // len(modification_types)) + random.sample(modification_types, (num_modifications % len(modification_types))) for _ in range(total_samples)]
+
+    for i, sample in enumerate(data):
         modified_responses = []
         modified_sample = sample.copy()
         original_response = modified_sample["outputs"][0]["response"]
-
-        # Append the original response with label true
         modified_sample["outputs"][0]["label"] = True
 
-        # Apply 20 random modifications
-        for _ in range(20):
-            chosen_modification_type = random.choice(modification_types)
+        for j, chosen_modification_type in enumerate(modifications_per_theorem[i]):
             new_response = modify_response(original_response, chosen_modification_type, all_responses)
-            
-            # Ensure the modification is valid
+            # Ensure the modification is valid (same as before)
             while new_response == original_response or new_response in modified_responses:
-                chosen_modification_type = random.choice(modification_types)
-                new_response = modify_response(original_response, chosen_modification_type, all_responses)
+                # If a modification fails, try a different strategy in the list
+                seed+=1
+                random.seed(seed)
+                modifications_per_theorem[i][j] = random.choice(modification_types)
+                new_response = modify_response(original_response, modifications_per_theorem[i][j], all_responses)
 
             modified_sample["outputs"].append({
                 "response": new_response,
                 "label": False,
-                "misalign_type": chosen_modification_type
+                "misalign_type": modifications_per_theorem[i][j]
             })
             modified_responses.append(new_response)
-            strategy_counts[chosen_modification_type] += 1
+            strategy_counts[modifications_per_theorem[i][j]] += 1
 
         modified_data.append(modified_sample)
 
-    # Calculate average coverage rate
-    avg_coverage_rate = {strategy: count / (20 * total_samples) for strategy, count in strategy_counts.items()}
+    # Calculate average coverage rate (same as before)
+    avg_coverage_rate = {strategy: count / (num_modifications * total_samples) for strategy, count in strategy_counts.items()}
     print("Average coverage rate per strategy rule:")
     for strategy, rate in avg_coverage_rate.items():
         print(f"{strategy}: {rate:.4f}")
 
     return modified_data
+
 
 def main(input_file, output_path, seed):
     random.seed(seed)
@@ -278,7 +287,9 @@ def main(input_file, output_path, seed):
     with open(input_file, 'r',encoding='utf-8') as f:
         data = json.load(f)
 
+
     modified_data = modify_dataset(data, seed)
+
 
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(modified_data, f, ensure_ascii=False, indent=2)
