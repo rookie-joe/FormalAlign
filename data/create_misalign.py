@@ -13,7 +13,7 @@ The 6 modification strategies are:
 
 Example command:
 python create_misalign.py --input_file minif2f/alignment/test_lean4.json --output_path minif2f/misalignment --seed 42
-python create_misalign.py --input_file forml4/alignment/formatted_random_test.json --output_path forml4/misalignment --seed 42
+python create_misalign.py --input_file forml4/alignment/formatted_basic_test.json --output_path forml4/misalignment --seed 42
 '''
 
 import json
@@ -32,7 +32,7 @@ def modify_constant(expression):
     theorem_parts = expression.split(':', 1)
     theorem_body = theorem_parts[1]
 
-    constants = re.findall(r'(?<!\\u)\b\d+\b', theorem_body)
+    constants = re.findall(r'(?<!\\u)\d+', theorem_body)
     if constants:
         chosen_constant = random.choice(constants)
         new_constant = str(int(chosen_constant) + random.randint(1, 100))
@@ -117,7 +117,7 @@ def introduce_variable(expression):
     theorem_body = theorem_parts[1]
     
     # Find all variable declarations
-    declarations = re.findall(r'(?<!\w)([a-zA-Z0-9]\w*(?:\s+[a-zA-Z0-9]\w*)*)\s*:\s*([^\s,()]+)', theorem_body)
+    declarations = re.findall(r'(?<!\w){0,1}([a-zA-Z0-9]\w*(?:\s+[a-zA-Z0-9]\w*)*){0,1}\s*:\s*([^\s,()]+)', theorem_body)
     
     if declarations:
         # Choose a random declaration
@@ -148,7 +148,7 @@ def change_variable_type(expression):
     available_types = ['ℕ', 'ℤ', 'ℚ', 'ℝ', '𝔹', '𝕊', '𝕋', 'α', '×', 'β', 'ℒ', '𝕎', '𝕌', '𝕍', '𝕏', '𝕐', '𝕄', '𝕀', '𝕆']
     
     # Find all variable declarations in the form of (variables : type)
-    variable_declarations = re.findall(r'\(([^:]+ : [^\s]+)\)', expression)
+    variable_declarations = re.findall(r'[{,(]?[^:]+ : [^\s,)}]+[{,)]?}?', expression)
     
     if variable_declarations:
         # Choose one of the variable declarations to modify
@@ -226,17 +226,10 @@ def modify_dataset(data, seed):
     random.seed(seed)
     modified_data = []
     modification_types = ['constant', 'exponent', 'variable_new', 'variable_type', 'equality', 'unpaired']
-    strategy_counts = Counter()  # Use Counter for easier counting
+    strategy_counts = Counter()
     total_samples = len(data)
     all_responses = [output["response"] for sample in data for output in sample["outputs"]]
-
-    # Pre-allocate modifications to ensure even distribution
     num_modifications = 20
-    # modifications_per_theorem = [modification_types[:] for _ in range(total_samples)]  # List of lists
-    # modifications_per_theorem = [modification_types[:] * (num_modifications // len(modification_types) + 1) for _ in range(total_samples)]
-    # for i in range(total_samples):
-    #     random.shuffle(modifications_per_theorem[i]) # Shuffle to randomize order
-    modifications_per_theorem = [modification_types[:] * (num_modifications // len(modification_types)) + random.sample(modification_types, (num_modifications % len(modification_types))) for _ in range(total_samples)]
 
     for i, sample in enumerate(data):
         modified_responses = []
@@ -244,34 +237,35 @@ def modify_dataset(data, seed):
         original_response = modified_sample["outputs"][0]["response"]
         modified_sample["outputs"][0]["label"] = True
 
-        for j, chosen_modification_type in enumerate(modifications_per_theorem[i]):
+        for _ in range(num_modifications):
+            # Dynamically adjust probabilities based on counts
+            weights = [max(0.1, 1 - strategy_counts[t] / (total_samples * num_modifications * 0.5)) for t in modification_types] #0.5 is a tuning parameter
+            chosen_modification_type = random.choices(modification_types, weights=weights)[0]
+
             new_response = modify_response(original_response, chosen_modification_type, all_responses)
-            # Ensure the modification is valid (same as before)
+
             while new_response == original_response or new_response in modified_responses:
-                # If a modification fails, try a different strategy in the list
-                seed+=1
-                random.seed(seed)
-                modifications_per_theorem[i][j] = random.choice(modification_types)
-                new_response = modify_response(original_response, modifications_per_theorem[i][j], all_responses)
+                # If a modification fails, try again without updating counts
+                weights = [max(0.1, 1 - strategy_counts[t] / (total_samples * num_modifications * 0.5)) for t in modification_types]
+                chosen_modification_type = random.choices(modification_types, weights=weights)[0]
+                new_response = modify_response(original_response, chosen_modification_type, all_responses)
 
             modified_sample["outputs"].append({
                 "response": new_response,
                 "label": False,
-                "misalign_type": modifications_per_theorem[i][j]
+                "misalign_type": chosen_modification_type
             })
             modified_responses.append(new_response)
-            strategy_counts[modifications_per_theorem[i][j]] += 1
+            strategy_counts[chosen_modification_type] += 1
 
         modified_data.append(modified_sample)
 
-    # Calculate average coverage rate (same as before)
     avg_coverage_rate = {strategy: count / (num_modifications * total_samples) for strategy, count in strategy_counts.items()}
     print("Average coverage rate per strategy rule:")
     for strategy, rate in avg_coverage_rate.items():
         print(f"{strategy}: {rate:.4f}")
 
     return modified_data
-
 
 def main(input_file, output_path, seed):
     random.seed(seed)
