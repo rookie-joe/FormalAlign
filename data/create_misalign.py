@@ -95,27 +95,47 @@ def modify_exponent(expression):
 
 def introduce_variable(expression):
     """
-    Introduce a new random variable in the declaration of variables.
+    Introduce a new random variable in a randomly chosen variable declaration,
+    excluding the part before "theorem xxxxx :".
     """
-    # Find all variable declarations in the form of (variables : ℝ)
-    variable_declarations = re.findall(r'([^:]+ : [^\s]+)', expression)
-    if variable_declarations:
-        # Choose a random variable declaration to modify
-        chosen_declaration = random.choice(variable_declarations)
-        # Extract the variable type, e.g., ℝ
-        variable_type_match = re.search(r'[^\s]+$', chosen_declaration)
-        if variable_type_match:
-            variable_type = variable_type_match.group(0)
-            # Extract existing variable names
-            existing_variables = re.findall(r'\b[a-zA-Z]\w*\b', chosen_declaration)
-            # Find a new variable name not in existing variables
-            new_variable = None
-            while new_variable is None or new_variable in existing_variables:
-                new_variable = random.choice(string.ascii_lowercase)
-            # Introduce the new variable
-            new_declaration = f'({new_variable} : {variable_type})'
-            expression = expression.replace(chosen_declaration, f'{chosen_declaration}\n{new_declaration}')
-    return expression
+    # extract the part before ':='
+    parts = expression.split(':=', -1)
+    expression_to_modify = parts[0]
+
+    # Extract the part after "theorem xxxxx :"
+    theorem_parts = expression_to_modify.split(':', 1)
+    if len(theorem_parts) < 2:
+        print('not in format theorem xx :')
+        return expression  # No ":" found, return original expression
+    
+    theorem_body = theorem_parts[1].strip()
+    
+    # Find all variable declarations
+    declarations = re.findall(r'(?<!\w)([a-zA-Z]\w*(?:\s+[a-zA-Z]\w*)*)\s*:\s*([^\s,()]+)', theorem_body)
+    
+    if declarations:
+        # Choose a random declaration
+        chosen_vars, chosen_type = random.choice(declarations)
+        
+        # Get existing variables
+        existing_vars = set(chosen_vars.split())
+        
+        # Find a new variable name
+        new_var = random.choice(list(string.ascii_lowercase))
+        
+        if new_var:
+            # Construct the new declaration
+            old_declaration = f'{chosen_vars} : {chosen_type}'
+            new_declaration = f'{chosen_vars} {new_var} : {chosen_type}'
+            
+            # Replace the old declaration with the new one
+            theorem_body = theorem_body.replace(old_declaration, new_declaration, 1)
+
+    modified_expression = f"{theorem_parts[0]}:{theorem_body}" + ':=' + parts[1]
+    print(modified_expression)
+
+    # Reconstruct the full expression
+    return modified_expression
 
 def change_variable_type(expression):
     """
@@ -142,15 +162,36 @@ def change_variable_type(expression):
     return expression
 
 
+import random
+
 def modify_equality(expression):
     """
-    Change all instances of ≠ to = in the given expression, and vice versa.
+    Randomly change one instance of ≠ to = in the given expression, or vice versa.
+    Leave := unchanged.
     """
-    if '≠' in expression:
-        expression = expression.replace('≠', '=')
-    elif '=' in expression:
-        expression = expression.replace('=', '≠')
-    return expression
+    parts = expression.split(':=', 1)
+    expression_to_modify = parts[0]
+
+    # Find all positions of '≠' and '=' in the expression
+    equality_positions = [i for i, char in enumerate(expression_to_modify) if char in '=≠']
+
+    if equality_positions:
+        # Randomly choose one '≠' to replace with '=' or vice versa
+        pos = random.choice(equality_positions)
+        expression_list = list(expression_to_modify)
+        if expression_list[pos] == '≠':
+            expression_list[pos] = '='
+        elif expression_list[pos] == '=':
+            expression_list[pos] = '≠'
+        expression_to_modify = ''.join(expression_list)
+
+    # if expression does not contain :=
+    if len(parts) > 1:
+        modified_expression = expression_to_modify + ':=' + parts[1]
+    else:
+        modified_expression = expression_to_modify
+    
+    return modified_expression
 
 def modify_unpaired(responses, current_response):
     """
