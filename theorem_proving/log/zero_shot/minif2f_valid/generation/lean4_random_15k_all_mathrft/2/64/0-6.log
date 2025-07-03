@@ -1,0 +1,119 @@
+[I debug.cpp:49] [c10d] The debug level is set to INFO.
+*****************************
+Namespace(cot_trigger_no=1, dataset='minif2f_valid', data_path='miniF2F-lean4/handle_minif2f_valid.jsonl', evaluation_mode='generation', batch_size=64, eval_method='', model_path='/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/', model_type='lean4_random_15k_all_mathrft/2', output_dir='generate_result/zero_shot/minif2f_valid/generation/lean4_random_15k_all_mathrft/2/64/', lora_path='', iter_num=0, method='zero_shot', data_question_key='formal_statement', data_answer_key='answer', sample_num=64, cuda_ind=6, tensor_parallel=1, cuda_start=0, cuda_num=8, load_in_8bit=False, rewrite=False, prompt_key='atp', use_typewriter=0, temperature=0.7, top_p=1, iter_max_new_tokens=512, init_max_new_tokens=2048, min_new_tokens=1, correct_response_format='The correct response is:', cot_trigger="Let's think step by step.")
+*****************************
+INFO 05-26 15:23:30 llm_engine.py:79] Initializing an LLM engine with config: model='/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/', tokenizer='/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/', tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=32768, download_dir=None, load_format=auto, tensor_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, device_config=cuda, seed=0)
+You set `add_prefix_space`. The tokenizer needs to be converted from the slow tokenizers
+[I socket.cpp:452] [c10d - debug] The server socket will attempt to listen on an IPv6 address.
+[I socket.cpp:502] [c10d - debug] The server socket is attempting to listen on [::]:43855.
+[I socket.cpp:576] [c10d] The server socket has started to listen on [::]:43855.
+[I TCPStore.cpp:252] [c10d - debug] The server has started on port = 43855.
+[I socket.cpp:686] [c10d - debug] The client socket will attempt to connect to an IPv6 address of (10.122.233.32, 43855).
+[I socket.cpp:297] [c10d - debug] The server socket on [::]:43855 has accepted a connection from [n122-233-032.byted.org]:60438.
+[I socket.cpp:849] [c10d] The client socket has connected to [n122-233-032.byted.org]:43855 on [n122-233-032.byted.org]:60438.
+[I TCPStore.cpp:261] [c10d - debug] TCP client connected to host 10.122.233.32:43855
+[I ProcessGroupNCCL.cpp:687] [Rank 0] ProcessGroupNCCL initialization options:NCCL_ASYNC_ERROR_HANDLING: 1, NCCL_DESYNC_DEBUG: 0, NCCL_ENABLE_TIMING: 0, NCCL_BLOCKING_WAIT: 0, TIMEOUT(ms): 1800000, USE_HIGH_PRIORITY_STREAM: 0, TORCH_DISTRIBUTED_DEBUG: INFO, NCCL_DEBUG: INFO, ID=159860224
+n122-233-032:604634:604634 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+n122-233-032:604634:604634 [0] NCCL INFO Bootstrap : Using eth0:10.122.233.32<0>
+n122-233-032:604634:604634 [0] NCCL INFO NET/Plugin : Plugin load (libnccl-net.so) returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory
+n122-233-032:604634:604634 [0] NCCL INFO NET/Plugin : No plugin found, using internal implementation
+n122-233-032:604634:604634 [0] NCCL INFO cudaDriverVersion 12020
+NCCL version 2.18.1+cuda12.1
+n122-233-032:604634:605101 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 0.
+n122-233-032:604634:605101 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+n122-233-032:604634:605101 [0] NCCL INFO NCCL_IB_HCA set to ^=mlx5_0
+n122-233-032:604634:605101 [0] NCCL INFO NET/IB : Using [0]mlx5_1:1/IB [1]mlx5_2:1/IB [2]mlx5_3:1/IB [3]mlx5_4:1/IB [4]mlx5_5:1/IB [5]mlx5_6:1/IB [6]mlx5_7:1/IB [7]mlx5_8:1/IB [RO]; OOB eth0:10.122.233.32<0>
+n122-233-032:604634:605101 [0] NCCL INFO Using network IB
+n122-233-032:604634:605101 [0] NCCL INFO NCCL_TOPO_FILE set by environment to /var/run/nvidia-topologyd/virtualTopology_H800.xml
+n122-233-032:604634:605101 [0] NCCL INFO Setting affinity for GPU 6 to 0fffff,ffffffff,ffffffff,fc000000,00000000,00000000
+n122-233-032:604634:605101 [0] NCCL INFO NCCL_NVLS_ENABLE set by environment to 0.
+n122-233-032:604634:605101 [0] NCCL INFO NCCL_MIN_NCHANNELS set by environment to 4.
+n122-233-032:604634:605101 [0] NCCL INFO Channel 00/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 01/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 02/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 03/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 04/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 05/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 06/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 07/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 08/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 09/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 10/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 11/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 12/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 13/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 14/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 15/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 16/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 17/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 18/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 19/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 20/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 21/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 22/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 23/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 24/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 25/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 26/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 27/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 28/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 29/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 30/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Channel 31/32 :    0
+n122-233-032:604634:605101 [0] NCCL INFO Trees [0] -1/-1/-1->0->-1 [1] -1/-1/-1->0->-1 [2] -1/-1/-1->0->-1 [3] -1/-1/-1->0->-1 [4] -1/-1/-1->0->-1 [5] -1/-1/-1->0->-1 [6] -1/-1/-1->0->-1 [7] -1/-1/-1->0->-1 [8] -1/-1/-1->0->-1 [9] -1/-1/-1->0->-1 [10] -1/-1/-1->0->-1 [11] -1/-1/-1->0->-1 [12] -1/-1/-1->0->-1 [13] -1/-1/-1->0->-1 [14] -1/-1/-1->0->-1 [15] -1/-1/-1->0->-1 [16] -1/-1/-1->0->-1 [17] -1/-1/-1->0->-1 [18] -1/-1/-1->0->-1 [19] -1/-1/-1->0->-1 [20] -1/-1/-1->0->-1 [21] -1/-1/-1->0->-1 [22] -1/-1/-1->0->-1 [23] -1/-1/-1->0->-1 [24] -1/-1/-1->0->-1 [25] -1/-1/-1->0->-1 [26] -1/-1/-1->0->-1 [27] -1/-1/-1->0->-1 [28] -1/-1/-1->0->-1 [29] -1/-1/-1->0->-1 [30] -1/-1/-1->0->-1 [31] -1/-1/-1->0->-1
+n122-233-032:604634:605101 [0] NCCL INFO P2P Chunksize set to 131072
+n122-233-032:604634:605101 [0] NCCL INFO Connected all rings
+n122-233-032:604634:605101 [0] NCCL INFO Connected all trees
+n122-233-032:604634:605101 [0] NCCL INFO 32 coll channels, 0 nvls channels, 32 p2p channels, 32 p2p channels per peer
+n122-233-032:604634:605101 [0] NCCL INFO comm 0x9cc4ab0 rank 0 nranks 1 cudaDev 0 busId 73020 commId 0xc404bffb9dd3cd80 - Init COMPLETE
+[I ProcessGroupNCCL.cpp:1342] NCCL_DEBUG: INFO
+[I ProcessGroupNCCL.cpp:687] [Rank 0] ProcessGroupNCCL initialization options:NCCL_ASYNC_ERROR_HANDLING: 1, NCCL_DESYNC_DEBUG: 0, NCCL_ENABLE_TIMING: 0, NCCL_BLOCKING_WAIT: 0, TIMEOUT(ms): 1800000, USE_HIGH_PRIORITY_STREAM: 0, TORCH_DISTRIBUTED_DEBUG: INFO, NCCL_DEBUG: INFO, ID=158946464
+[I ProcessGroupNCCL.cpp:687] [Rank 0] ProcessGroupNCCL initialization options:NCCL_ASYNC_ERROR_HANDLING: 1, NCCL_DESYNC_DEBUG: 0, NCCL_ENABLE_TIMING: 0, NCCL_BLOCKING_WAIT: 0, TIMEOUT(ms): 1800000, USE_HIGH_PRIORITY_STREAM: 0, TORCH_DISTRIBUTED_DEBUG: INFO, NCCL_DEBUG: INFO, ID=158948080
+INFO 05-26 15:23:48 llm_engine.py:337] # GPU blocks: 29308, # CPU blocks: 2048
+INFO 05-26 15:23:50 model_runner.py:676] Capturing the model for CUDA graphs. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+INFO 05-26 15:23:50 model_runner.py:680] CUDA graphs can take additional 1~3 GiB memory per GPU. If you are running out of memory, consider decreasing `gpu_memory_utilization` or enforcing eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+INFO 05-26 15:23:53 model_runner.py:748] Graph capturing finished in 3 secs.
+/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/
+load data
+++ Prompt : 
+ Statement and proof in natural language:
+
+# Problem:
+Let $z=\frac{1+i}{\sqrt{2}}.$What is $\left(z^{1^2}+z^{2^2}+z^{3^2}+\dots+z^{{12}^2}\right) \cdot \left(\frac{1}{z^{1^2}}+\frac{1}{z^{2^2}}+\frac{1}{z^{3^2}}+\dots+\frac{1}{z^{{12}^2}}\right)?$
+
+$\textbf{(A) } 18 \qquad \textbf{(B) } 72-36\sqrt2 \qquad \textbf{(C) } 36 \qquad \textbf{(D) } 72 \qquad \textbf{(E) } 72+36\sqrt2$ Show that it is \textbf{(C) }36.
+
+# Proof:
+Note that $z = \mathrm{cis }(45^{\circ})$.
+
+Also note that $z^{k} = z^{k + 8}$ for all positive integers $k$ because of De Moivre's Theorem. Therefore, we want to look at the exponents of each term modulo $8$.
+
+$1^2, 5^2,$ and $9^2$ are all $1 \pmod{8}$
+
+$2^2, 6^2,$ and $10^2$ are all $4 \pmod{8}$
+
+$3^2, 7^2,$ and $11^2$ are all $1 \pmod{8}$
+
+$4^2, 8^2,$ and $12^2$ are all $0 \pmod{8}$
+
+Therefore,
+
+$z^{1^2} = z^{5^2} = z^{9^2} = \mathrm{cis }(45^{\circ})$
+
+$z^{2^2} = z^{6^2} = z^{10^2} = \mathrm{cis }(180^{\circ}) = -1$
+
+$z^{3^2} = z^{7^2} = z^{11^2} = \mathrm{cis }(45^{\circ})$
+
+$z^{4^2} = z^{8^2} = z^{12^2} = \mathrm{cis }(0^{\circ}) = 1$
+
+The term thus $\left(z^{1^2}+z^{2^2}+z^{3^2}+\dots+z^{{12}^2}\right)$ simplifies to $6\mathrm{cis }(45^{\circ})$, while the term $\left(\frac{1}{z^{1^2}}+\frac{1}{z^{2^2}}+\frac{1}{z^{3^2}}+\dots+\frac{1}{z^{{12}^2}}\right)$ simplifies to $\frac{6}{\mathrm{cis }(45^{\circ})}$. Upon multiplication, the $\mathrm{cis }(45^{\circ})$ cancels out and leaves us with $\textbf{(C) }36$.
+
+Translate the statement and proof in natural language to lean4:theorem amc12a_2019_p21
+  (z : ℂ)
+  (h₀ : z = (1 + Complex.I) / Real.sqrt 2) :
+  (∑ k in Finset.Icc 1 12, (z^(k^2))) * (∑ k in Finset.Icc 1 12, (1 / z^(k^2))) = 36 := 
+fitered 0 already
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [14:40<00:00, 880.12s/it]100%|██████████| 1/1 [14:40<00:00, 880.12s/it]
+n122-233-032:604634:605178 [0] NCCL INFO [Service thread] Connection closed by localRank 0
+n122-233-032:604634:604634 [0] NCCL INFO comm 0x9cc4ab0 rank 0 nranks 1 cudaDev 0 busId 73020 - Abort COMPLETE
+[I ProcessGroupNCCL.cpp:875] [Rank 0] Destroyed 1communicators on CUDA device 0

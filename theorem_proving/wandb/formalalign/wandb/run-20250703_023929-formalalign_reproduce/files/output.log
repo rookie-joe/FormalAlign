@@ -1,0 +1,59 @@
+
+
+Training:   0%|                                        | 1/10585 [00:18<54:02:46, 18.38s/it, epoch=0, llm_loss=1.33, loss=2.59, proj_loss=1.26, step=0]
+Traceback (most recent call last):
+  File "/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/theorem_proving/../train_clip.py", line 239, in <module>
+    main()
+  File "/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/theorem_proving/../train_clip.py", line 187, in main
+    output = model(**batch_input, output_all_losses=True)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/deepspeed/utils/nvtx.py", line 15, in wrapped_fn
+    ret_val = func(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/deepspeed/runtime/engine.py", line 1852, in forward
+    loss = self.module(*inputs, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/utils/verifier_models.py", line 121, in forward
+    outputs = self.backbone(
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/models/mistral/modeling_mistral.py", line 1157, in forward
+    outputs = self.model(
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/models/mistral/modeling_mistral.py", line 1032, in forward
+    layer_outputs = self._gradient_checkpointing_func(
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/_compile.py", line 24, in inner
+    return torch._dynamo.disable(fn, recursive)(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py", line 328, in _fn
+    return fn(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/_dynamo/external_utils.py", line 17, in inner
+    return fn(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/utils/checkpoint.py", line 451, in checkpoint
+    return CheckpointFunction.apply(function, preserve, *args)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/autograd/function.py", line 539, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/utils/checkpoint.py", line 230, in forward
+    outputs = run_function(*args)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/models/mistral/modeling_mistral.py", line 754, in forward
+    hidden_states = self.input_layernorm(hidden_states)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/models/mistral/modeling_mistral.py", line 88, in forward
+    return self.weight * hidden_states.to(input_dtype)
+KeyboardInterrupt

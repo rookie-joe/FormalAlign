@@ -1,0 +1,8 @@
+torch
+transformers==4.39.2 
+DeepSpeed==0.14.0 
+SentencePiece 
+accelerate>=0.21.0
+vllm==0.3.2
+wandb==0.17.0
+flash-attn==2.5.9.post1

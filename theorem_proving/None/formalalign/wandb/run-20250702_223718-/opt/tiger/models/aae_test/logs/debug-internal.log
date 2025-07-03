@@ -1,0 +1,43 @@
+2025-07-02 22:37:18,767 INFO    StreamThr :1402539 [internal.py:wandb_internal():85] W&B internal server running at pid: 1402539, started at: 2025-07-02 22:37:18.767020
+2025-07-02 22:37:18,768 DEBUG   HandlerThread:1402539 [handler.py:handle_request():158] handle_request: status
+2025-07-02 22:37:18,770 INFO    WriterThread:1402539 [datastore.py:open_for_write():87] open: None/formalalign/wandb/run-20250702_223718-/opt/tiger/models/aae_test/run-/opt/tiger/models/aae_test.wandb
+2025-07-02 22:37:18,771 DEBUG   SenderThread:1402539 [sender.py:send():378] send: header
+2025-07-02 22:37:18,779 DEBUG   SenderThread:1402539 [sender.py:send():378] send: run
+2025-07-02 22:37:18,876 ERROR   SenderThread:1402539 [internal_api.py:execute():344] 400 response executing GraphQL.
+2025-07-02 22:37:18,876 ERROR   SenderThread:1402539 [internal_api.py:execute():345] {"errors":[{"message":"invalid run name \"/opt/tiger/models/aae_test\", cannot contain character \"/\" at position 1","path":["upsertBucket"]}],"data":{"upsertBucket":null}}
+2025-07-02 22:37:18,876 ERROR   SenderThread:1402539 [sender.py:send_run():970] invalid run name "/opt/tiger/models/aae_test", cannot contain character "/" at position 1 (Error 400: Bad Request)
+Traceback (most recent call last):
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/apis/normalize.py", line 41, in wrapper
+    return func(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/internal/internal_api.py", line 2188, in upsert_run
+    response = self.gql(
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/internal/internal_api.py", line 312, in gql
+    ret = self._retry_gql(
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/lib/retry.py", line 131, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/internal/internal_api.py", line 340, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/lib/gql_request.py", line 59, in execute
+    request.raise_for_status()
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://api.wandb.ai/graphql
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/internal/sender.py", line 968, in send_run
+    server_run = self._init_run(run, config_value_dict)
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/sdk/internal/sender.py", line 1013, in _init_run
+    server_run, inserted, server_messages = self._api.upsert_run(
+  File "/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/wandb/apis/normalize.py", line 51, in wrapper
+    raise CommError(message, error)
+wandb.errors.CommError: invalid run name "/opt/tiger/models/aae_test", cannot contain character "/" at position 1 (Error 400: Bad Request)
+2025-07-02 22:37:18,933 DEBUG   HandlerThread:1402539 [handler.py:handle_request():158] handle_request: shutdown
+2025-07-02 22:37:18,933 INFO    HandlerThread:1402539 [handler.py:finish():882] shutting down handler
+2025-07-02 22:37:19,779 INFO    WriterThread:1402539 [datastore.py:close():296] close: None/formalalign/wandb/run-20250702_223718-/opt/tiger/models/aae_test/run-/opt/tiger/models/aae_test.wandb
+2025-07-02 22:37:19,881 INFO    SenderThread:1402539 [sender.py:finish():1545] shutting down sender

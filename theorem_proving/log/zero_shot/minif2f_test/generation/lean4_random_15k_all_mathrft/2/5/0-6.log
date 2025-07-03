@@ -1,0 +1,98 @@
+[I debug.cpp:49] [c10d] The debug level is set to INFO.
+*****************************
+Namespace(cot_trigger_no=1, dataset='minif2f_test', data_path='miniF2F-lean4/handle_minif2f_test.jsonl', evaluation_mode='generation', batch_size=64, eval_method='', model_path='/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/', model_type='lean4_random_15k_all_mathrft/2', output_dir='generate_result/zero_shot/minif2f_test/generation/lean4_random_15k_all_mathrft/2/5/', lora_path='', iter_num=0, method='zero_shot', data_question_key='formal_statement', data_answer_key='answer', sample_num=5, cuda_ind=6, tensor_parallel=1, cuda_start=0, cuda_num=8, load_in_8bit=False, rewrite=False, prompt_key='atp', use_typewriter=0, temperature=0.7, top_p=1, iter_max_new_tokens=512, init_max_new_tokens=2048, min_new_tokens=1, correct_response_format='The correct response is:', cot_trigger="Let's think step by step.")
+*****************************
+INFO 05-26 12:07:02 llm_engine.py:79] Initializing an LLM engine with config: model='/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/', tokenizer='/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/', tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=32768, download_dir=None, load_format=auto, tensor_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, device_config=cuda, seed=0)
+You set `add_prefix_space`. The tokenizer needs to be converted from the slow tokenizers
+[I socket.cpp:452] [c10d - debug] The server socket will attempt to listen on an IPv6 address.
+[I socket.cpp:502] [c10d - debug] The server socket is attempting to listen on [::]:54209.
+[I socket.cpp:576] [c10d] The server socket has started to listen on [::]:54209.
+[I TCPStore.cpp:252] [c10d - debug] The server has started on port = 54209.
+[I socket.cpp:686] [c10d - debug] The client socket will attempt to connect to an IPv6 address of (10.122.233.32, 54209).
+[I socket.cpp:297] [c10d - debug] The server socket on [::]:54209 has accepted a connection from [n122-233-032.byted.org]:60218.
+[I socket.cpp:849] [c10d] The client socket has connected to [n122-233-032.byted.org]:54209 on [n122-233-032.byted.org]:60218.
+[I TCPStore.cpp:261] [c10d - debug] TCP client connected to host 10.122.233.32:54209
+[I ProcessGroupNCCL.cpp:687] [Rank 0] ProcessGroupNCCL initialization options:NCCL_ASYNC_ERROR_HANDLING: 1, NCCL_DESYNC_DEBUG: 0, NCCL_ENABLE_TIMING: 0, NCCL_BLOCKING_WAIT: 0, TIMEOUT(ms): 1800000, USE_HIGH_PRIORITY_STREAM: 0, TORCH_DISTRIBUTED_DEBUG: INFO, NCCL_DEBUG: INFO, ID=177411056
+n122-233-032:469828:469828 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+n122-233-032:469828:469828 [0] NCCL INFO Bootstrap : Using eth0:10.122.233.32<0>
+n122-233-032:469828:469828 [0] NCCL INFO NET/Plugin : Plugin load (libnccl-net.so) returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory
+n122-233-032:469828:469828 [0] NCCL INFO NET/Plugin : No plugin found, using internal implementation
+n122-233-032:469828:469828 [0] NCCL INFO cudaDriverVersion 12020
+NCCL version 2.18.1+cuda12.1
+n122-233-032:469828:470257 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 0.
+n122-233-032:469828:470257 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+n122-233-032:469828:470257 [0] NCCL INFO NCCL_IB_HCA set to ^=mlx5_0
+n122-233-032:469828:470257 [0] NCCL INFO NET/IB : Using [0]mlx5_1:1/IB [1]mlx5_2:1/IB [2]mlx5_3:1/IB [3]mlx5_4:1/IB [4]mlx5_5:1/IB [5]mlx5_6:1/IB [6]mlx5_7:1/IB [7]mlx5_8:1/IB [RO]; OOB eth0:10.122.233.32<0>
+n122-233-032:469828:470257 [0] NCCL INFO Using network IB
+n122-233-032:469828:470257 [0] NCCL INFO NCCL_TOPO_FILE set by environment to /var/run/nvidia-topologyd/virtualTopology_H800.xml
+n122-233-032:469828:470257 [0] NCCL INFO Setting affinity for GPU 6 to 0fffff,ffffffff,ffffffff,fc000000,00000000,00000000
+n122-233-032:469828:470257 [0] NCCL INFO NCCL_NVLS_ENABLE set by environment to 0.
+n122-233-032:469828:470257 [0] NCCL INFO NCCL_MIN_NCHANNELS set by environment to 4.
+n122-233-032:469828:470257 [0] NCCL INFO Channel 00/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 01/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 02/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 03/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 04/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 05/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 06/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 07/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 08/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 09/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 10/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 11/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 12/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 13/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 14/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 15/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 16/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 17/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 18/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 19/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 20/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 21/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 22/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 23/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 24/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 25/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 26/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 27/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 28/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 29/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 30/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Channel 31/32 :    0
+n122-233-032:469828:470257 [0] NCCL INFO Trees [0] -1/-1/-1->0->-1 [1] -1/-1/-1->0->-1 [2] -1/-1/-1->0->-1 [3] -1/-1/-1->0->-1 [4] -1/-1/-1->0->-1 [5] -1/-1/-1->0->-1 [6] -1/-1/-1->0->-1 [7] -1/-1/-1->0->-1 [8] -1/-1/-1->0->-1 [9] -1/-1/-1->0->-1 [10] -1/-1/-1->0->-1 [11] -1/-1/-1->0->-1 [12] -1/-1/-1->0->-1 [13] -1/-1/-1->0->-1 [14] -1/-1/-1->0->-1 [15] -1/-1/-1->0->-1 [16] -1/-1/-1->0->-1 [17] -1/-1/-1->0->-1 [18] -1/-1/-1->0->-1 [19] -1/-1/-1->0->-1 [20] -1/-1/-1->0->-1 [21] -1/-1/-1->0->-1 [22] -1/-1/-1->0->-1 [23] -1/-1/-1->0->-1 [24] -1/-1/-1->0->-1 [25] -1/-1/-1->0->-1 [26] -1/-1/-1->0->-1 [27] -1/-1/-1->0->-1 [28] -1/-1/-1->0->-1 [29] -1/-1/-1->0->-1 [30] -1/-1/-1->0->-1 [31] -1/-1/-1->0->-1
+n122-233-032:469828:470257 [0] NCCL INFO P2P Chunksize set to 131072
+n122-233-032:469828:470257 [0] NCCL INFO Connected all rings
+n122-233-032:469828:470257 [0] NCCL INFO Connected all trees
+n122-233-032:469828:470257 [0] NCCL INFO 32 coll channels, 0 nvls channels, 32 p2p channels, 32 p2p channels per peer
+n122-233-032:469828:470257 [0] NCCL INFO comm 0xad81b20 rank 0 nranks 1 cudaDev 0 busId 73020 commId 0xb730d562b85bd424 - Init COMPLETE
+[I ProcessGroupNCCL.cpp:1342] NCCL_DEBUG: INFO
+[I ProcessGroupNCCL.cpp:687] [Rank 0] ProcessGroupNCCL initialization options:NCCL_ASYNC_ERROR_HANDLING: 1, NCCL_DESYNC_DEBUG: 0, NCCL_ENABLE_TIMING: 0, NCCL_BLOCKING_WAIT: 0, TIMEOUT(ms): 1800000, USE_HIGH_PRIORITY_STREAM: 0, TORCH_DISTRIBUTED_DEBUG: INFO, NCCL_DEBUG: INFO, ID=176496464
+[I ProcessGroupNCCL.cpp:687] [Rank 0] ProcessGroupNCCL initialization options:NCCL_ASYNC_ERROR_HANDLING: 1, NCCL_DESYNC_DEBUG: 0, NCCL_ENABLE_TIMING: 0, NCCL_BLOCKING_WAIT: 0, TIMEOUT(ms): 1800000, USE_HIGH_PRIORITY_STREAM: 0, TORCH_DISTRIBUTED_DEBUG: INFO, NCCL_DEBUG: INFO, ID=176498080
+INFO 05-26 12:07:20 llm_engine.py:337] # GPU blocks: 29308, # CPU blocks: 2048
+INFO 05-26 12:07:22 model_runner.py:676] Capturing the model for CUDA graphs. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+INFO 05-26 12:07:22 model_runner.py:680] CUDA graphs can take additional 1~3 GiB memory per GPU. If you are running out of memory, consider decreasing `gpu_memory_utilization` or enforcing eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+INFO 05-26 12:07:25 model_runner.py:748] Graph capturing finished in 3 secs.
+/opt/tiger/models/lean4_random_15k_all_mathrft/checkpoint-292/
+load data
+++ Prompt : 
+ Statement and proof in natural language:
+
+# Problem:
+The volume of a cone is given by the formula $V = \frac{1}{3}Bh$, where $B$ is the area of the base and $h$ is the height. The area of the base of a cone is 30 square units, and its height is 6.5 units. What is the number of cubic units in its volume? Show that it is 65.
+
+# Proof:
+We are given that $B = 30$ and $h = 6.5$ and asked to find $\frac{1}{3}Bh$.  We find that \[\frac{1}{3}Bh = \frac{1}{3}(30)(6.5) = (10)(6.5) = 65.\]
+
+Translate the statement and proof in natural language to lean4:theorem mathd_algebra_478
+  (b h v : ℝ)
+  (h₀ : 0 < b ∧ 0 < h ∧ 0 < v)
+  (h₁ : v = 1 / 3 * (b * h))
+  (h₂ : b = 30)
+  (h₃ : h = 13 / 2) :
+  v = 65 := 
+fitered 0 already
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [01:26<00:00, 87.00s/it]100%|██████████| 1/1 [01:26<00:00, 87.00s/it]
+n122-233-032:469828:470347 [0] NCCL INFO [Service thread] Connection closed by localRank 0
+n122-233-032:469828:469828 [0] NCCL INFO comm 0xad81b20 rank 0 nranks 1 cudaDev 0 busId 73020 - Abort COMPLETE
+[I ProcessGroupNCCL.cpp:875] [Rank 0] Destroyed 1communicators on CUDA device 0
