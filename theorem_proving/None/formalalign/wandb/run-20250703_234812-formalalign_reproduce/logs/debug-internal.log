@@ -1,0 +1,19 @@
+2025-07-03 23:48:12,494 INFO    StreamThr :2437399 [internal.py:wandb_internal():85] W&B internal server running at pid: 2437399, started at: 2025-07-03 23:48:12.494108
+2025-07-03 23:48:12,495 DEBUG   HandlerThread:2437399 [handler.py:handle_request():158] handle_request: status
+2025-07-03 23:48:12,496 INFO    WriterThread:2437399 [datastore.py:open_for_write():87] open: None/formalalign/wandb/run-20250703_234812-formalalign_reproduce/run-formalalign_reproduce.wandb
+2025-07-03 23:48:12,498 DEBUG   SenderThread:2437399 [sender.py:send():378] send: header
+2025-07-03 23:48:12,505 DEBUG   SenderThread:2437399 [sender.py:send():378] send: run
+2025-07-03 23:48:12,646 INFO    SenderThread:2437399 [dir_watcher.py:__init__():211] watching files in: None/formalalign/wandb/run-20250703_234812-formalalign_reproduce/files
+2025-07-03 23:48:12,646 INFO    SenderThread:2437399 [sender.py:_start_run_threads():1123] run started: formalalign_reproduce with start time 1751600892.494797
+2025-07-03 23:48:13,497 WARNING StreamThr :2437399 [internal.py:is_dead():413] Internal process exiting, parent pid 2436620 disappeared
+2025-07-03 23:48:13,497 ERROR   StreamThr :2437399 [internal.py:wandb_internal():151] Internal process shutdown.
+2025-07-03 23:48:13,505 INFO    HandlerThread:2437399 [handler.py:finish():882] shutting down handler
+2025-07-03 23:48:13,505 INFO    WriterThread:2437399 [datastore.py:close():296] close: None/formalalign/wandb/run-20250703_234812-formalalign_reproduce/run-formalalign_reproduce.wandb
+2025-07-03 23:48:13,646 INFO    SenderThread:2437399 [sender.py:finish():1545] shutting down sender
+2025-07-03 23:48:13,646 INFO    SenderThread:2437399 [dir_watcher.py:finish():358] shutting down directory watcher
+2025-07-03 23:48:14,647 INFO    SenderThread:2437399 [dir_watcher.py:finish():388] scan: None/formalalign/wandb/run-20250703_234812-formalalign_reproduce/files
+2025-07-03 23:48:14,647 INFO    SenderThread:2437399 [dir_watcher.py:finish():402] scan save: None/formalalign/wandb/run-20250703_234812-formalalign_reproduce/files/config.yaml config.yaml
+2025-07-03 23:48:14,647 INFO    SenderThread:2437399 [file_pusher.py:finish():169] shutting down file pusher
+2025-07-03 23:48:14,648 INFO    SenderThread:2437399 [file_pusher.py:join():175] waiting for file pusher
+2025-07-03 23:48:15,006 INFO    wandb-upload_0:2437399 [upload_job.py:push():130] Uploaded file None/formalalign/wandb/run-20250703_234812-formalalign_reproduce/files/config.yaml
+2025-07-03 23:48:15,496 INFO    MainThread:2437399 [internal.py:handle_exit():75] Internal process exited

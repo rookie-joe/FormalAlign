@@ -5,6 +5,12 @@ deepspeed_config:
   deepspeed_multinode_launcher: standard
   gradient_clipping: 1.0
   zero_stage: 1
+  zero_optimization:
+    stage: 1
+    allgather_partitions: true
+    reduce_scatter: true
+    allgather_bucket_size: 5e8
+    reduce_bucket_size: 5e8
 distributed_type: DEEPSPEED
 downcast_bf16: true
 dynamo_backend: 'NO'
@@ -17,7 +23,7 @@ fsdp_config: {}
 megatron_lm_config: {}
 mixed_precision: bf16
 num_machines: 1
-num_processes: 2
+num_processes: 4
 rdzv_backend: static
 same_network: true
 tpu_name: null
