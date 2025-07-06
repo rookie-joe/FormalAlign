@@ -8,6 +8,7 @@ from accelerate import Accelerator
 import wandb
 import os
 import numpy as np
+import torch.nn.functional as F
 # os.environ['WANDB_PROJECT'] = "verifier-reproduce"
 os.environ['WANDB_PROJECT'] = "formalalign"
 
@@ -110,6 +111,10 @@ def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
             image_final_embed = output.image_final_embed
             text_final_embed = output.text_final_embed
             
+            # Normalize embeddings
+            image_final_embed = image_final_embed / image_final_embed.norm(dim=-1, keepdim=True)
+            text_final_embed = text_final_embed / text_final_embed.norm(dim=-1, keepdim=True)
+            
             all_image_embeds.append(image_final_embed)
             all_text_embeds.append(text_final_embed)
             all_labels.append(batch['v_labels'])
@@ -121,8 +126,8 @@ def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
     all_text_embeds = torch.cat(all_text_embeds, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
     
-    # Calculate similarity matrix
-    similarity = torch.matmul(all_image_embeds, all_text_embeds.transpose(0, 1))
+    # Calculate similarity matrix with temperature scaling
+    similarity = torch.matmul(all_image_embeds, all_text_embeds.transpose(0, 1)) / model.clip_temperature
     
     # Calculate additional metrics
     metrics = {}
@@ -135,6 +140,8 @@ def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
     # Embedding statistics
     metrics['image_embed_norm_mean'] = torch.norm(all_image_embeds, dim=1).mean().item()
     metrics['text_embed_norm_mean'] = torch.norm(all_text_embeds, dim=1).mean().item()
+    metrics['image_embed_norm_std'] = torch.norm(all_image_embeds, dim=1).std().item()
+    metrics['text_embed_norm_std'] = torch.norm(all_text_embeds, dim=1).std().item()
     
     # Similarity statistics
     pos_sim = similarity[torch.arange(similarity.shape[0]), torch.arange(similarity.shape[0])]
@@ -145,6 +152,12 @@ def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
     metrics['neg_sim_mean'] = neg_sim.mean().item()
     metrics['neg_sim_std'] = neg_sim.std().item()
     
+    # Distribution metrics
+    metrics['pos_sim_min'] = pos_sim.min().item()
+    metrics['pos_sim_max'] = pos_sim.max().item()
+    metrics['neg_sim_min'] = neg_sim.min().item()
+    metrics['neg_sim_max'] = neg_sim.max().item()
+    
     # Ranking metrics
     sorted_indices = torch.argsort(similarity, dim=1, descending=True)
     ranks = torch.where(sorted_indices == torch.arange(sorted_indices.shape[0]).unsqueeze(1).to(sorted_indices.device))[1] + 1
@@ -152,6 +165,10 @@ def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
     metrics['median_rank'] = ranks.float().median().item()
     metrics['rank_1'] = (ranks == 1).float().mean().item()
     metrics['rank_5'] = (ranks <= 5).float().mean().item()
+    metrics['rank_10'] = (ranks <= 10).float().mean().item()
+    
+    # Calculate mean reciprocal rank (MRR)
+    metrics['mrr'] = (1.0 / ranks.float()).mean().item()
     
     if accelerator.is_main_process:
         print("\nValidation Metrics:")
@@ -255,28 +272,68 @@ def main():
             # backpropagation
             with accelerator.autocast(),accelerator.accumulate(model):
                 output = model(**batch_input, output_all_losses=True)
-                loss = output.loss
-                all_losses = output.all_losses
+                
+                # Get embeddings and normalize
+                image_embeds = output.image_final_embed
+                text_embeds = output.text_final_embed
+                image_embeds = image_embeds / image_embeds.norm(dim=-1, keepdim=True)
+                text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
+                
+                # Calculate similarity matrix
+                logits = torch.matmul(image_embeds, text_embeds.transpose(0, 1)) / model_args.clip_temperature
+                
+                # Calculate contrastive loss
+                labels = torch.arange(len(logits), device=logits.device)
+                contrastive_loss = (
+                    F.cross_entropy(logits, labels) + 
+                    F.cross_entropy(logits.transpose(0, 1), labels)
+                ) / 2
+                
+                # Calculate cross-entropy loss if enabled
+                ce_loss = output.all_losses.get('llm_loss', 0.0) if data_args.loss_on_llm else 0.0
+                
+                # Combine losses with weights
+                loss = (
+                    model_args.contrastive_weight * contrastive_loss + 
+                    model_args.ce_weight * ce_loss
+                )
+                
+                # Add hard negative mining if enabled
+                if model_args.use_hard_negatives:
+                    # Find hard negatives (high similarity but wrong pairs)
+                    mask = torch.eye(len(logits), device=logits.device).bool()
+                    neg_similarities = logits.masked_fill(mask, float('-inf'))
+                    hard_negative_loss = -torch.log_softmax(neg_similarities, dim=1).mean()
+                    loss += model_args.hard_negative_weight * hard_negative_loss
+                
                 accelerator.backward(loss)
                 optimizer.step()
-                # if not accelerator.optimizer_step_was_skipped and global_step % training_args.gradient_accumulation_steps == 0:
                 lr_scheduler.step()
                 optimizer.zero_grad()
                 accelerator.wait_for_everyone()
 
             # training logging
             if accelerator.is_main_process:
-                train_dataloader_iterator.set_postfix(epoch=cur_epoch, step=local_step, loss=loss.item(),
-                                                      proj_loss=all_losses.get('proj_loss').item(), llm_loss=all_losses.get(
-                        'llm_loss').item() if data_args.loss_on_llm else 0)
+                train_dataloader_iterator.set_postfix(
+                    epoch=cur_epoch, 
+                    step=local_step, 
+                    loss=loss.item(),
+                    contrastive_loss=contrastive_loss.item(),
+                    ce_loss=ce_loss if isinstance(ce_loss, float) else ce_loss.item()
+                )
 
-                if global_step % training_args.gradient_accumulation_steps :
-                    wandb.log({
+                if global_step % training_args.gradient_accumulation_steps:
+                    log_dict = {
                         'loss': loss.item(),
-                        'proj_loss': all_losses.get('proj_loss').item(),
-                        'llm_loss': all_losses.get('llm_loss').item() if data_args.loss_on_llm else 0,
+                        'contrastive_loss': contrastive_loss.item(),
+                        'ce_loss': ce_loss if isinstance(ce_loss, float) else ce_loss.item(),
                         'lr': lr_scheduler.get_last_lr()[0],
-                    }, step=global_step)
+                    }
+                    
+                    if model_args.use_hard_negatives:
+                        log_dict['hard_negative_loss'] = hard_negative_loss.item()
+                    
+                    wandb.log(log_dict, step=global_step)
 
             # Validation and save checkpoint
             save_steps = training_args.save_steps if training_args.save_steps > 0 else 500
