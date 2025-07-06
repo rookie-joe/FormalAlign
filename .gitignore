@@ -1,0 +1,74 @@
+# Checkpoints and model files
+checkpoints/
+*.pth
+*.bin
+*.safetensors
+*.model
+models/
+
+# Logs and temporary files
+logs/
+*.log
+wandb/
+*.tmp
+*.temp
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Data files (if they are large)
+data/cache/
+data/processed/
+*.csv
+*.json
+*.jsonl
+*.parquet
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints 

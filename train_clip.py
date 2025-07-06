@@ -207,12 +207,31 @@ def main():
                     }, step=global_step)
 
             # save checkpoint
-            if global_step!= 0 and (global_step % training_args.gradient_accumulation_steps == 0) and (global_step // training_args.gradient_accumulation_steps ) % training_args.per_save_steps == 0 and global_step!= loaded_step:
+            save_steps = training_args.save_steps if training_args.save_steps > 0 else 1000
+            if global_step!= 0 and (global_step % training_args.gradient_accumulation_steps == 0) and (global_step // training_args.gradient_accumulation_steps ) % save_steps == 0 and global_step!= loaded_step:
                 accelerator.wait_for_everyone()
                 resume_dir = os.path.join(output_args.save_dir, str(global_step // training_args.gradient_accumulation_steps))
                 print(f"saving model in {resume_dir} ")
-                # save_verifier_checkpoint(accelerator, model, tokenizer, resume_dir, global_step, training_args.save_total_limit)
+                
+                # Save current checkpoint
                 accelerator.save_state(resume_dir)
+                
+                # Clean up old checkpoints to maintain save_total_limit
+                if training_args.save_total_limit > 0:
+                    import shutil
+                    # Get all checkpoint directories
+                    checkpoint_dirs = []
+                    for d in os.listdir(output_args.save_dir):
+                        dir_path = os.path.join(output_args.save_dir, d)
+                        if os.path.isdir(dir_path) and d.isdigit():
+                            checkpoint_dirs.append((int(d), dir_path))
+                    
+                    # Sort by step number and remove old checkpoints
+                    checkpoint_dirs.sort(key=lambda x: x[0], reverse=True)
+                    if len(checkpoint_dirs) > training_args.save_total_limit:
+                        for _, old_dir in checkpoint_dirs[training_args.save_total_limit:]:
+                            print(f"Deleting old checkpoint: {old_dir}")
+                            shutil.rmtree(old_dir)
 
             global_step += 1
 
