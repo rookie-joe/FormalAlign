@@ -165,10 +165,10 @@ def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
     metrics['median_rank'] = ranks.float().median().item()
     metrics['rank_1'] = (ranks == 1).float().mean().item()
     metrics['rank_5'] = (ranks <= 5).float().mean().item()
-    metrics['rank_10'] = (ranks <= 10).float().mean().item()
-    
-    # Calculate mean reciprocal rank (MRR)
-    metrics['mrr'] = (1.0 / ranks.float()).mean().item()
+    # formalalign 2.0 加入更多排序指标：top10, mean reciprocal rank (MRR)
+    # metrics['rank_10'] = (ranks <= 10).float().mean().item()
+    # mean reciprocal rank (MRR)
+    # metrics['mrr'] = (1.0 / ranks.float()).mean().item()
     
     if accelerator.is_main_process:
         print("\nValidation Metrics:")
