@@ -30,6 +30,8 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --model_name_or_path ${checkpoint_dir} \
   --project_dim 4096 \
   --clip_temperature 0.05 \
+  --contrastive_weight 1.0 \
+  --ce_weight 0.5 \
   --data_dir ../data/mma_forml4/train.jsonl \
   --data_id mma_forml4_combined \
   --target_set train \
@@ -42,14 +44,14 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --loss_level token \
   --loss_on_llm True \
   --num_train_epoches 1 \
-  --eval_steps 1000 \
+  --eval_steps 200 \
   --per_device_train_batch_size 32 \
   --per_device_eval_batch_size 64 \
   --gradient_accumulation_steps 4 \
   --gradient_checkpointing True \
   --learning_rate 5e-6 \
   --weight_decay 0.01 \
-  --save_steps 100 \
+  --save_steps 200 \
   --lr_scheduler_type "linear" \
   --warmup_ratio 0.03 \
   --save_epoches 1 \
