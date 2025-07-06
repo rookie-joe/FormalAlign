@@ -1,5 +1,6 @@
 torch
 tqdm
+pandas
 transformers==4.39.2 
 DeepSpeed==0.14.0 
 SentencePiece 

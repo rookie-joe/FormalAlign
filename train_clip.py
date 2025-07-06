@@ -14,9 +14,9 @@ os.environ['WANDB_PROJECT'] = "formalalign"
 from utils.states import set_deepspeed_config, set_training_states, set_random_seed
 from utils.optim import get_optimizers
 from utils.models import save_training_args_with_accelerator
-from utils.verifier_models import save_verifier, save_verifier_checkpoint, save_best_verifier_checkpoint, build_verifier_clip
-from utils.datasets import make_training_verifier_data_module, make_training_dataloaders
-from utils.metrics import VerifierClassificationAcc
+from utils.verifier_models import save_verifier, build_verifier_clip
+from utils.datasets import make_training_dataloaders
+from utils.metrics import VerifierClassificationAcc, VerifierClipClassificationAcc_original
 from utils.mma.datasets import make_finetuning_generator_data_module
 
 
@@ -25,6 +25,10 @@ class ModelArguments:
     model_name_or_path: Optional[str] = field(default="facebook/opt-125m")
     project_dim : Optional[int] = field(default=512)
     clip_temperature: Optional[float] = field(default=0.07)
+    contrastive_weight: Optional[float] = field(default=1.0)
+    ce_weight: Optional[float] = field(default=1.0)
+    use_hard_negatives: Optional[bool] = field(default=False)
+    hard_negative_weight: Optional[float] = field(default=0.1)
 
 @dataclass
 class DataArguments:
@@ -91,12 +95,79 @@ class OutputArguments:
     save_dir: str = field(default='checkpoints/')
 
 
+def evaluate(model, val_dataloader, accelerator, acc_thres=0.7):
+    model.eval()
+    val_metric = VerifierClipClassificationAcc_original(n_data=len(val_dataloader.dataset))
+    
+    all_image_embeds = []
+    all_text_embeds = []
+    all_labels = []
+    
+    with torch.no_grad():
+        for batch in tqdm(val_dataloader, desc="Evaluating", disable=not accelerator.is_main_process):
+            batch_input = {k: v for k, v in batch.items() if k in ('input_ids', 'attention_mask', 'labels', 'v_labels', 't_eoss')}
+            output = model(**batch_input)
+            image_final_embed = output.image_final_embed
+            text_final_embed = output.text_final_embed
+            
+            all_image_embeds.append(image_final_embed)
+            all_text_embeds.append(text_final_embed)
+            all_labels.append(batch['v_labels'])
+            
+            val_metric(image_final_embed, text_final_embed, batch['v_labels'])
+    
+    # Concatenate all embeddings and labels
+    all_image_embeds = torch.cat(all_image_embeds, dim=0)
+    all_text_embeds = torch.cat(all_text_embeds, dim=0)
+    all_labels = torch.cat(all_labels, dim=0)
+    
+    # Calculate similarity matrix
+    similarity = torch.matmul(all_image_embeds, all_text_embeds.transpose(0, 1))
+    
+    # Calculate additional metrics
+    metrics = {}
+    
+    # Basic accuracy and recall
+    test_acc, test_recall = val_metric.get_metric(acc_thres)
+    metrics['accuracy'] = test_acc
+    metrics['recall'] = test_recall
+    
+    # Embedding statistics
+    metrics['image_embed_norm_mean'] = torch.norm(all_image_embeds, dim=1).mean().item()
+    metrics['text_embed_norm_mean'] = torch.norm(all_text_embeds, dim=1).mean().item()
+    
+    # Similarity statistics
+    pos_sim = similarity[torch.arange(similarity.shape[0]), torch.arange(similarity.shape[0])]
+    neg_sim = similarity[~torch.eye(similarity.shape[0], dtype=bool)]
+    
+    metrics['pos_sim_mean'] = pos_sim.mean().item()
+    metrics['pos_sim_std'] = pos_sim.std().item()
+    metrics['neg_sim_mean'] = neg_sim.mean().item()
+    metrics['neg_sim_std'] = neg_sim.std().item()
+    
+    # Ranking metrics
+    sorted_indices = torch.argsort(similarity, dim=1, descending=True)
+    ranks = torch.where(sorted_indices == torch.arange(sorted_indices.shape[0]).unsqueeze(1).to(sorted_indices.device))[1] + 1
+    metrics['mean_rank'] = ranks.float().mean().item()
+    metrics['median_rank'] = ranks.float().median().item()
+    metrics['rank_1'] = (ranks == 1).float().mean().item()
+    metrics['rank_5'] = (ranks <= 5).float().mean().item()
+    
+    if accelerator.is_main_process:
+        print("\nValidation Metrics:")
+        for k, v in metrics.items():
+            print(f"{k}: {v:.4f}")
+        
+        wandb.log(metrics, step=accelerator.state.global_step)
+    
+    model.train()
+    return metrics
+
 def main():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments, OutputArguments))
     model_args, data_args, training_args, output_args = parser.parse_args_into_dataclasses()
     config_args_dict = model_args.__dict__.copy().update(dict(**data_args.__dict__, **training_args.__dict__))
     set_random_seed(training_args.seed)
-
 
     accelerator = Accelerator(gradient_accumulation_steps=training_args.gradient_accumulation_steps)
 
@@ -123,6 +194,7 @@ def main():
         model, train_dataloader, optimizer, lr_scheduler = accelerator.prepare(model, train_dataloader, optimizer, lr_scheduler)
 
     cur_epoch = local_step = global_step = 0
+    best_acc = 0.0  # Track best accuracy
 
     # init wandb
     if accelerator.is_main_process:
@@ -206,13 +278,33 @@ def main():
                         'lr': lr_scheduler.get_last_lr()[0],
                     }, step=global_step)
 
-            # save checkpoint
-            save_steps = training_args.save_steps if training_args.save_steps > 0 else 1000
+            # Validation and save checkpoint
+            save_steps = training_args.save_steps if training_args.save_steps > 0 else 500
             if global_step!= 0 and (global_step % training_args.gradient_accumulation_steps == 0) and (global_step // training_args.gradient_accumulation_steps ) % save_steps == 0 and global_step!= loaded_step:
+                
                 accelerator.wait_for_everyone()
+                
+                # Run validation
+                if val_dataloader is not None:
+                    val_metrics = evaluate(model, val_dataloader, accelerator)
+                    if accelerator.is_main_process:
+                        wandb.log(val_metrics, step=global_step)
+                        print("\nValidation Metrics:")
+                        for k, v in val_metrics.items():
+                            print(f"{k}: {v:.4f}")
+                        
+                        # Save best model
+                        if val_metrics['accuracy'] > best_acc:
+                            best_acc = val_metrics['accuracy']
+                            best_model_dir = os.path.join(output_args.save_dir, 'best')
+                            print(f"New best accuracy: {best_acc:.4f}, saving model to {best_model_dir}")
+                            accelerator.save_state(best_model_dir)
+                
+                # Save current checkpoint
                 resume_dir = os.path.join(output_args.save_dir, str(global_step // training_args.gradient_accumulation_steps))
                 print(f"saving model in {resume_dir} ")
-                
+                # save_verifier_checkpoint(accelerator, model, tokenizer, resume_dir, global_step, training_args.save_total_limit)
+
                 # Save current checkpoint
                 accelerator.save_state(resume_dir)
                 
@@ -230,8 +322,13 @@ def main():
                     checkpoint_dirs.sort(key=lambda x: x[0], reverse=True)
                     if len(checkpoint_dirs) > training_args.save_total_limit:
                         for _, old_dir in checkpoint_dirs[training_args.save_total_limit:]:
-                            print(f"Deleting old checkpoint: {old_dir}")
-                            shutil.rmtree(old_dir)
+                            try:
+                                print(f"Deleting old checkpoint: {old_dir}")
+                                shutil.rmtree(old_dir, ignore_errors=True)
+                            except Exception as e:
+                                print(f"Warning: Failed to delete checkpoint {old_dir}: {e}")
+                                # Continue training even if deletion fails
+                                continue
 
             global_step += 1
 

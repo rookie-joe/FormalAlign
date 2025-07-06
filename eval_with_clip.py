@@ -1,5 +1,5 @@
 from utils.states import set_random_seed
-from utils.verifier_models import load_verifier, load_verifier_clip
+from utils.verifier_models import load_verifier_clip
 from utils.datasets import make_test_verifier_data_module, make_testing_dataloader, make_test_verifierclip_data_module
 from utils.metrics import VerifierClipClassificationAcc_original, VerifierClipMPk_original
 from accelerate import Accelerator
@@ -23,12 +23,15 @@ import gc
 class ModelArguments:
     model_name_or_path: Optional[str] = field(default="facebook/opt-125m")
     fp16: Optional[bool] = field(default=False)
+    project_dim: Optional[int] = field(default=512)
 
 @dataclass
 class DataArguments:
     data_dir: str = field(default='data/gsm8k/model_generation', metadata={"help": "Path to the training data."})
     target_set: str = field(default='test', metadata={"help": "specify which data set to generate"})
     generator_id: str = field(default='llama7b-2-ep2')
+    data_id: str = field(default='test')
+    verifier_id: str = field(default='default')
     
     verifier_output_dir: str = field(default='eval_results/gsm8k/verifier', metadata={"help": "Path to save the responses and metrics."})
     generator_metric_dir: str = field(default='eval_results/gsm8k/generator_with_verifier', metadata={"help": "Path to save the responses and metrics."})
@@ -38,7 +41,8 @@ class DataArguments:
 class InferenceArguments:
     batch_size: int = field(default=1)
     seed: int = field(default=None)
-    acc_thres: float= field(default=0.5)
+    acc_thres: float = field(default=0.7)
+    per_device_eval_batch_size: int = field(default=4)
 
 
 def get_save_files(model_args: dataclass, data_args: dataclass, inference_args: dataclass):
@@ -196,16 +200,6 @@ def main():
         }
         accelerator.print(metrics)
 
-
-        # metrics = {
-        #     '#question': n_question,
-        #     '#solution_per_problem': per_problem_sampling_solution,
-        #     '#total_solutions': len(dataset),
-        #     'accuracy': test_acc,
-        #     'recall': test_recall,
-        #     'mp1': mp1,
-        # }
-        # accelerator.print(metrics)
 
         # # calculate generator metrics
         # n_list = list(range(5, per_problem_sampling_solution + 1, 5))

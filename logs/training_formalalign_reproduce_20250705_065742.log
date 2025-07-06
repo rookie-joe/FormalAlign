@@ -1,305 +1,0 @@
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/utils/hub.py:124: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-ipex flag is deprecated, will be removed in Accelerate v1.10. From 2.7.0, PyTorch has all needed optimizations for Intel CPU and XPU.
-[2025-07-05 06:57:45,964] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-[2025-07-05 06:57:48,966] torch.distributed.run: [WARNING] 
-[2025-07-05 06:57:48,966] torch.distributed.run: [WARNING] *****************************************
-[2025-07-05 06:57:48,966] torch.distributed.run: [WARNING] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
-[2025-07-05 06:57:48,966] torch.distributed.run: [WARNING] *****************************************
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/utils/hub.py:124: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/utils/hub.py:124: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/utils/hub.py:124: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/utils/hub.py:124: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/accelerate/utils/dataclasses.py:1262: UserWarning: DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.
-  warnings.warn("DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.")
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/accelerate/utils/dataclasses.py:1262: UserWarning: DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.
-  warnings.warn("DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.")
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/accelerate/utils/dataclasses.py:1262: UserWarning: DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.
-  warnings.warn("DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.")
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/accelerate/utils/dataclasses.py:1262: UserWarning: DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.
-  warnings.warn("DeepSpeed Zero3 Init flag is only applicable for ZeRO Stage 3. Setting it to False.")
-[2025-07-05 06:57:54,641] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-[2025-07-05 06:57:54,839] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-[2025-07-05 06:57:54,910] [INFO] [comm.py:637:init_distributed] cdb=None
-[2025-07-05 06:57:54,910] [INFO] [comm.py:668:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
-[2025-07-05 06:57:54,978] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-[2025-07-05 06:57:55,010] [INFO] [real_accelerator.py:191:get_accelerator] Setting ds_accelerator to cuda (auto detect)
-[2025-07-05 06:57:55,117] [INFO] [comm.py:637:init_distributed] cdb=None
-[2025-07-05 06:57:55,256] [INFO] [comm.py:637:init_distributed] cdb=None
-[2025-07-05 06:57:55,284] [INFO] [comm.py:637:init_distributed] cdb=None
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/deepspeed.py:23: FutureWarning: transformers.deepspeed module is deprecated and will be removed in a future version. Please import deepspeed modules directly from transformers.integrations
-  warnings.warn(
-+ [Model] Initializing LM: mistralai/Mistral-7B-v0.1
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/huggingface_hub/file_download.py:943: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Downloading shards:   0%|          | 0/2 [00:00<?, ?it/s]Downloading shards: 100%|██████████| 2/2 [00:00<00:00, 5436.56it/s]
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/deepspeed.py:23: FutureWarning: transformers.deepspeed module is deprecated and will be removed in a future version. Please import deepspeed modules directly from transformers.integrations
-  warnings.warn(
-+ [Model] Initializing LM: mistralai/Mistral-7B-v0.1
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/huggingface_hub/file_download.py:943: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Downloading shards:   0%|          | 0/2 [00:00<?, ?it/s]Downloading shards: 100%|██████████| 2/2 [00:00<00:00, 5105.67it/s]
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/deepspeed.py:23: FutureWarning: transformers.deepspeed module is deprecated and will be removed in a future version. Please import deepspeed modules directly from transformers.integrations
-  warnings.warn(
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/deepspeed.py:23: FutureWarning: transformers.deepspeed module is deprecated and will be removed in a future version. Please import deepspeed modules directly from transformers.integrations
-  warnings.warn(
-+ [Model] Initializing LM: mistralai/Mistral-7B-v0.1
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/huggingface_hub/file_download.py:943: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-+ [Model] Initializing LM: mistralai/Mistral-7B-v0.1
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/huggingface_hub/file_download.py:943: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Downloading shards:   0%|          | 0/2 [00:00<?, ?it/s]Downloading shards: 100%|██████████| 2/2 [00:00<00:00, 6026.30it/s]
-Downloading shards:   0%|          | 0/2 [00:00<?, ?it/s]Downloading shards: 100%|██████████| 2/2 [00:00<00:00, 5555.37it/s]
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:02<00:02,  2.22s/it]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.85s/it]Loading checkpoint shards:  50%|█████     | 1/2 [00:02<00:02,  2.18s/it]Loading checkpoint shards:  50%|█████     | 1/2 [00:02<00:02,  2.15s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.50s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.61s/it]
-Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.27s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.36s/it]
-+ [Model] Initializing Tokenizer: mistralai/Mistral-7B-v0.1
-+ [Model] Initializing Tokenizer: mistralai/Mistral-7B-v0.1
-we do not use project here
-jusing the rand
-+ [Dataset] Loading Training Data
-we do not use project here
-jusing the rand
-+ [Dataset] Loading Training Data
-+ [Dataset] Show Example from Training Data
-Input:
- Statement in natural language:
-For a given number 'n', 'n' is less than 'xn' of 'a1' and 'n'.
-Translate the statement in natural language to Lean: Output:
- theorem n_lt_xn (n) : n < xn a1 n :=
-+ [Dataset] Tokenizing Training Data
-+ [Dataset] Show Example from Training Data
-Input:
- Statement in natural language:
-For a given number 'n', 'n' is less than 'xn' of 'a1' and 'n'.
-Translate the statement in natural language to Lean: Output:
- theorem n_lt_xn (n) : n < xn a1 n :=
-+ [Dataset] Tokenizing Training Data
-Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.52s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.62s/it]
-Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.51s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.61s/it]
-+ [Model] Initializing Tokenizer: mistralai/Mistral-7B-v0.1
-+ [Model] Initializing Tokenizer: mistralai/Mistral-7B-v0.1
-we do not use project here
-jusing the rand
-+ [Dataset] Loading Training Data
-we do not use project here
-jusing the rand
-+ [Dataset] Loading Training Data
-+ [Dataset] Show Example from Training Data
-Input:
- Statement in natural language:
-For a given number 'n', 'n' is less than 'xn' of 'a1' and 'n'.
-Translate the statement in natural language to Lean: Output:
- theorem n_lt_xn (n) : n < xn a1 n :=
-+ [Dataset] Tokenizing Training Data
-+ [Dataset] Show Example from Training Data
-Input:
- Statement in natural language:
-For a given number 'n', 'n' is less than 'xn' of 'a1' and 'n'.
-Translate the statement in natural language to Lean: Output:
- theorem n_lt_xn (n) : n < xn a1 n :=
-+ [Dataset] Tokenizing Training Data
-Max tokens: 862
-+ [Training States] There are 1324 steps in total.
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/optimization.py:457: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-Max tokens: 862
-+ [Training States] There are 1324 steps in total.
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/optimization.py:457: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-[2025-07-05 06:58:31,872] [INFO] [logging.py:96:log_dist] [Rank 0] DeepSpeed info: version=0.14.0, git-hash=unknown, git-branch=unknown
-Max tokens: 862
-+ [Training States] There are 1324 steps in total.
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/optimization.py:457: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-Max tokens: 862
-+ [Training States] There are 1324 steps in total.
-/research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/lib/python3.10/site-packages/transformers/optimization.py:457: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-[2025-07-05 06:58:43,871] [INFO] [logging.py:96:log_dist] [Rank 0] DeepSpeed Flops Profiler Enabled: False
-[2025-07-05 06:58:43,871] [INFO] [logging.py:96:log_dist] [Rank 0] Using client Optimizer as basic optimizer
-[2025-07-05 06:58:43,872] [INFO] [logging.py:96:log_dist] [Rank 0] Removing param_group that has no 'params' in the basic Optimizer
-[2025-07-05 06:58:43,880] [INFO] [logging.py:96:log_dist] [Rank 0] DeepSpeed Basic Optimizer = AdamW
-[2025-07-05 06:58:43,880] [INFO] [utils.py:56:is_zero_supported_optimizer] Checking ZeRO support for optimizer=AdamW type=<class 'transformers.optimization.AdamW'>
-[2025-07-05 06:58:43,881] [WARNING] [engine.py:1188:_do_optimizer_sanity_check] **** You are using ZeRO with an untested optimizer, proceed with caution *****
-[2025-07-05 06:58:43,881] [INFO] [logging.py:96:log_dist] [Rank 0] Creating torch.bfloat16 ZeRO stage 2 optimizer
-[2025-07-05 06:58:43,881] [INFO] [stage_1_and_2.py:149:__init__] Reduce bucket size 500,000,000
-[2025-07-05 06:58:43,881] [INFO] [stage_1_and_2.py:150:__init__] Allgather bucket size 500,000,000
-[2025-07-05 06:58:43,881] [INFO] [stage_1_and_2.py:151:__init__] CPU Offload: False
-[2025-07-05 06:58:43,881] [INFO] [stage_1_and_2.py:152:__init__] Round robin gradient partitioning: False
-[2025-07-05 06:59:27,417] [INFO] [utils.py:800:see_memory_usage] Before initializing optimizer states
-[2025-07-05 06:59:27,417] [INFO] [utils.py:801:see_memory_usage] MA 20.73 GB         Max_MA 20.73 GB         CA 20.86 GB         Max_CA 21 GB 
-[2025-07-05 06:59:27,417] [INFO] [utils.py:808:see_memory_usage] CPU Virtual Memory:  used = 81.68 GB, percent = 8.1%
-[2025-07-05 06:59:27,576] [INFO] [utils.py:800:see_memory_usage] After initializing optimizer states
-[2025-07-05 06:59:27,576] [INFO] [utils.py:801:see_memory_usage] MA 20.73 GB         Max_MA 27.48 GB         CA 27.61 GB         Max_CA 28 GB 
-[2025-07-05 06:59:27,577] [INFO] [utils.py:808:see_memory_usage] CPU Virtual Memory:  used = 81.68 GB, percent = 8.1%
-[2025-07-05 06:59:27,577] [INFO] [stage_1_and_2.py:539:__init__] optimizer state initialized
-[2025-07-05 06:59:27,728] [INFO] [utils.py:800:see_memory_usage] After initializing ZeRO optimizer
-[2025-07-05 06:59:27,729] [INFO] [utils.py:801:see_memory_usage] MA 20.73 GB         Max_MA 20.73 GB         CA 27.61 GB         Max_CA 28 GB 
-[2025-07-05 06:59:27,729] [INFO] [utils.py:808:see_memory_usage] CPU Virtual Memory:  used = 81.68 GB, percent = 8.1%
-[2025-07-05 06:59:27,731] [INFO] [logging.py:96:log_dist] [Rank 0] DeepSpeed Final Optimizer = AdamW
-[2025-07-05 06:59:27,731] [INFO] [logging.py:96:log_dist] [Rank 0] DeepSpeed using client LR scheduler
-[2025-07-05 06:59:27,731] [INFO] [logging.py:96:log_dist] [Rank 0] DeepSpeed LR Scheduler = None
-[2025-07-05 06:59:27,731] [INFO] [logging.py:96:log_dist] [Rank 0] step=0, skipped=0, lr=[2e-06, 2e-06], mom=[(0.9, 0.999), (0.9, 0.999)]
-[2025-07-05 06:59:27,731] [INFO] [config.py:996:print] DeepSpeedEngine configuration:
-[2025-07-05 06:59:27,731] [INFO] [config.py:1000:print]   activation_checkpointing_config  {
-    "partition_activations": false, 
-    "contiguous_memory_optimization": false, 
-    "cpu_checkpointing": false, 
-    "number_checkpoints": null, 
-    "synchronize_checkpoint_boundary": false, 
-    "profile": false
-}
-[2025-07-05 06:59:27,731] [INFO] [config.py:1000:print]   aio_config ................... {'block_size': 1048576, 'queue_depth': 8, 'thread_count': 1, 'single_submit': False, 'overlap_events': True}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   amp_enabled .................. False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   amp_params ................... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   autotuning_config ............ {
-    "enabled": false, 
-    "start_step": null, 
-    "end_step": null, 
-    "metric_path": null, 
-    "arg_mappings": null, 
-    "metric": "throughput", 
-    "model_info": null, 
-    "results_dir": "autotuning_results", 
-    "exps_dir": "autotuning_exps", 
-    "overwrite": true, 
-    "fast": true, 
-    "start_profile_step": 3, 
-    "end_profile_step": 5, 
-    "tuner_type": "gridsearch", 
-    "tuner_early_stopping": 5, 
-    "tuner_num_trials": 50, 
-    "model_info_path": null, 
-    "mp_size": 1, 
-    "max_train_batch_size": null, 
-    "min_train_batch_size": 1, 
-    "max_train_micro_batch_size_per_gpu": 1.024000e+03, 
-    "min_train_micro_batch_size_per_gpu": 1, 
-    "num_tuning_micro_batch_sizes": 3
-}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   bfloat16_enabled ............. True
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   bfloat16_immediate_grad_update  False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   checkpoint_parallel_write_pipeline  False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   checkpoint_tag_validation_enabled  True
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   checkpoint_tag_validation_fail  False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   comms_config ................. <deepspeed.comm.config.DeepSpeedCommsConfig object at 0x77caa89e6dd0>
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   communication_data_type ...... None
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   compile_config ............... enabled=False backend='inductor' kwargs={}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   compression_config ........... {'weight_quantization': {'shared_parameters': {'enabled': False, 'quantizer_kernel': False, 'schedule_offset': 0, 'quantize_groups': 1, 'quantize_verbose': False, 'quantization_type': 'symmetric', 'quantize_weight_in_forward': False, 'rounding': 'nearest', 'fp16_mixed_quantize': False, 'quantize_change_ratio': 0.001}, 'different_groups': {}}, 'activation_quantization': {'shared_parameters': {'enabled': False, 'quantization_type': 'symmetric', 'range_calibration': 'dynamic', 'schedule_offset': 1000}, 'different_groups': {}}, 'sparse_pruning': {'shared_parameters': {'enabled': False, 'method': 'l1', 'schedule_offset': 1000}, 'different_groups': {}}, 'row_pruning': {'shared_parameters': {'enabled': False, 'method': 'l1', 'schedule_offset': 1000}, 'different_groups': {}}, 'head_pruning': {'shared_parameters': {'enabled': False, 'method': 'topk', 'schedule_offset': 1000}, 'different_groups': {}}, 'channel_pruning': {'shared_parameters': {'enabled': False, 'method': 'l1', 'schedule_offset': 1000}, 'different_groups': {}}, 'layer_reduction': {'enabled': False}}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   curriculum_enabled_legacy .... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   curriculum_params_legacy ..... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   data_efficiency_config ....... {'enabled': False, 'seed': 1234, 'data_sampling': {'enabled': False, 'num_epochs': 1000, 'num_workers': 0, 'curriculum_learning': {'enabled': False}}, 'data_routing': {'enabled': False, 'random_ltd': {'enabled': False, 'layer_token_lr_schedule': {'enabled': False}}}}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   data_efficiency_enabled ...... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   dataloader_drop_last ......... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   disable_allgather ............ False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   dump_state ................... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   dynamic_loss_scale_args ...... None
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_enabled ........... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_gas_boundary_resolution  1
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_layer_name ........ bert.encoder.layer
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_layer_num ......... 0
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_max_iter .......... 100
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_stability ......... 1e-06
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_tol ............... 0.01
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   eigenvalue_verbose ........... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   elasticity_enabled ........... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   flops_profiler_config ........ {
-    "enabled": false, 
-    "recompute_fwd_factor": 0.0, 
-    "profile_step": 1, 
-    "module_depth": -1, 
-    "top_modules": 1, 
-    "detailed": true, 
-    "output_file": null
-}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   fp16_auto_cast ............... None
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   fp16_enabled ................. False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   fp16_master_weights_and_gradients  False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   global_rank .................. 0
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   grad_accum_dtype ............. None
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   gradient_accumulation_steps .. 1
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   gradient_clipping ............ 1.0
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   gradient_predivide_factor .... 1.0
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   graph_harvesting ............. False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   hybrid_engine ................ enabled=False max_out_tokens=512 inference_tp_size=1 release_inference_cache=False pin_parameters=True tp_gather_partition_size=8
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   initial_dynamic_scale ........ 1
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   load_universal_checkpoint .... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   loss_scale ................... 1.0
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   memory_breakdown ............. False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   mics_hierarchial_params_gather  False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   mics_shard_size .............. -1
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   monitor_config ............... tensorboard=TensorBoardConfig(enabled=False, output_path='', job_name='DeepSpeedJobName') wandb=WandbConfig(enabled=False, group=None, team=None, project='deepspeed') csv_monitor=CSVConfig(enabled=False, output_path='', job_name='DeepSpeedJobName') enabled=False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   nebula_config ................ {
-    "enabled": false, 
-    "persistent_storage_path": null, 
-    "persistent_time_interval": 100, 
-    "num_of_version_in_retention": 2, 
-    "enable_nebula_load": true, 
-    "load_path": null
-}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   optimizer_legacy_fusion ...... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   optimizer_name ............... None
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   optimizer_params ............. None
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   pipeline ..................... {'stages': 'auto', 'partition': 'best', 'seed_layers': False, 'activation_checkpoint_interval': 0, 'pipe_partitioned': True, 'grad_partitioned': True}
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   pld_enabled .................. False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   pld_params ................... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   prescale_gradients ........... False
-[2025-07-05 06:59:27,732] [INFO] [config.py:1000:print]   scheduler_name ............... None
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   scheduler_params ............. None
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   seq_parallel_communication_data_type  torch.float32
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   sparse_attention ............. None
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   sparse_gradients_enabled ..... False
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   steps_per_print .............. inf
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   train_batch_size ............. 64
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   train_micro_batch_size_per_gpu  16
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   use_data_before_expert_parallel_  False
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   use_node_local_storage ....... False
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   wall_clock_breakdown ......... False
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   weight_quantization_config ... None
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   world_size ................... 4
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   zero_allow_untested_optimizer  True
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   zero_config .................. stage=2 contiguous_gradients=True reduce_scatter=True reduce_bucket_size=500,000,000 use_multi_rank_bucket_allreduce=True allgather_partitions=True allgather_bucket_size=500,000,000 overlap_comm=False load_from_fp32_weights=True elastic_checkpoint=False offload_param=DeepSpeedZeroOffloadParamConfig(device='none', nvme_path=None, buffer_count=5, buffer_size=100,000,000, max_in_cpu=1,000,000,000, pin_memory=False) offload_optimizer=DeepSpeedZeroOffloadOptimizerConfig(device='none', nvme_path=None, buffer_count=4, pin_memory=False, pipeline=False, pipeline_read=False, pipeline_write=False, fast_init=False, ratio=1.0) sub_group_size=1,000,000,000 cpu_offload_param=None cpu_offload_use_pin_memory=None cpu_offload=None prefetch_bucket_size=50,000,000 param_persistence_threshold=100,000 model_persistence_threshold=sys.maxsize max_live_parameters=1,000,000,000 max_reuse_distance=1,000,000,000 gather_16bit_weights_on_model_save=False stage3_gather_fp16_weights_on_model_save=False ignore_unused_parameters=True legacy_stage1=False round_robin_gradients=False zero_hpz_partition_size=1 zero_quantized_weights=False zero_quantized_nontrainable_weights=False zero_quantized_gradients=False mics_shard_size=-1 mics_hierarchical_params_gather=False memory_efficient_linear=True pipeline_loading_checkpoint=False override_module_apply=True
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   zero_enabled ................. True
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   zero_force_ds_cpu_optimizer .. True
-[2025-07-05 06:59:27,733] [INFO] [config.py:1000:print]   zero_optimization_stage ...... 2
-[2025-07-05 06:59:27,733] [INFO] [config.py:986:print_user_config]   json = {
-    "train_batch_size": 64, 
-    "train_micro_batch_size_per_gpu": 16, 
-    "gradient_accumulation_steps": 1, 
-    "zero_optimization": {
-        "stage": 2, 
-        "offload_optimizer": {
-            "device": "none", 
-            "nvme_path": null
-        }, 
-        "offload_param": {
-            "device": "none", 
-            "nvme_path": null
-        }, 
-        "stage3_gather_16bit_weights_on_model_save": false
-    }, 
-    "gradient_clipping": 1.0, 
-    "steps_per_print": inf, 
-    "bf16": {
-        "enabled": true
-    }, 
-    "fp16": {
-        "enabled": false
-    }, 
-    "zero_allow_untested_optimizer": true
-}
-wandb: Currently logged in as: kama1 (kama1-brown-university). Use `wandb login --relogin` to force relogin
-wandb: wandb version 0.21.0 is available!  To upgrade, please run:
-wandb:  $ pip install wandb --upgrade
-wandb: Tracking run with wandb version 0.17.0
-wandb: Run data is saved locally in None/formalalign/wandb/run-20250705_065928-formalalign_reproduce
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run formalalign_reproduce
-wandb: ⭐️ View project at https://wandb.ai/kama1-brown-university/formalalign
-wandb: 🚀 View run at https://wandb.ai/kama1-brown-university/formalalign/runs/formalalign_reproduce
-Training:   0%|          | 0/1324 [00:00<?, ?it/s]Training:   0%|          | 0/1324 [00:13<?, ?it/s, epoch=0, llm_loss=1.16, loss=3.93, proj_loss=2.77, step=0]Training:   0%|          | 1/1324 [00:13<5:01:07, 13.66s/it, epoch=0, llm_loss=1.16, loss=3.93, proj_loss=2.77, step=0]Training:   0%|          | 1/1324 [00:20<5:01:07, 13.66s/it, epoch=0, llm_loss=1.06, loss=3.64, proj_loss=2.58, step=1]Training:   0%|          | 2/1324 [00:20<3:30:45,  9.57s/it, epoch=0, llm_loss=1.06, loss=3.64, proj_loss=2.58, step=1]Training:   0%|          | 2/1324 [00:22<3:30:45,  9.57s/it, epoch=0, llm_loss=1.05, loss=3.31, proj_loss=2.27, step=2]Training:   0%|          | 3/1324 [00:22<2:18:34,  6.29s/it, epoch=0, llm_loss=1.05, loss=3.31, proj_loss=2.27, step=2]Training:   0%|          | 3/1324 [00:26<2:18:34,  6.29s/it, epoch=0, llm_loss=0.974, loss=2.55, proj_loss=1.58, step=3]Training:   0%|          | 4/1324 [00:26<1:57:05,  5.32s/it, epoch=0, llm_loss=0.974, loss=2.55, proj_loss=1.58, step=3]Training:   0%|          | 4/1324 [00:30<1:57:05,  5.32s/it, epoch=0, llm_loss=0.876, loss=1.99, proj_loss=1.11, step=4]Training:   0%|          | 5/1324 [00:30<1:47:17,  4.88s/it, epoch=0, llm_loss=0.876, loss=1.99, proj_loss=1.11, step=4]Training:   0%|          | 5/1324 [00:33<1:47:17,  4.88s/it, epoch=0, llm_loss=0.743, loss=1.37, proj_loss=0.625, step=5]Training:   0%|          | 6/1324 [00:33<1:33:14,  4.25s/it, epoch=0, llm_loss=0.743, loss=1.37, proj_loss=0.625, step=5]

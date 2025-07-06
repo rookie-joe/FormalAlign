@@ -104,6 +104,8 @@ class VerifierClipClassificationAcc_original:
         
         # scores = v_scores.squeeze(-1).gather(1, index).squeeze()
         gts = v_labels.gather(1, index).squeeze()
+        if isinstance(gts, torch.Tensor) and gts.dim() == 0:
+            gts = gts.unsqueeze(0)  # Ensure gts is always at least 1D
         text_embeddings = F.normalize(text_final_embed, dim=1)
         image_embeddings = F.normalize(image_final_embed, dim=1)
 
@@ -111,8 +113,6 @@ class VerifierClipClassificationAcc_original:
         similarity_matrix = torch.matmul(text_embeddings, image_embeddings.t())
         matching_similarity_scores = torch.diag(similarity_matrix)
 
-
-        
         self.scores.append(matching_similarity_scores.tolist())
         self.gts.append(gts.tolist())
 
@@ -181,6 +181,8 @@ class VerifierClipMPk_original:
         index = ((n_seq - 1) - v_labels.ne(IGNORE_INDEX).flip(dims=[1]).float().argmax(1)).view(-1, 1)
         
         gts = v_labels.gather(1, index).squeeze()
+        if isinstance(gts, torch.Tensor) and gts.dim() == 0:
+            gts = gts.unsqueeze(0)  # Ensure gts is always at least 1D
         
         self.preds.append(matching_similarity_scores.tolist())
         self.gts.append(gts.tolist())

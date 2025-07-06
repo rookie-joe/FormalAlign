@@ -39,17 +39,37 @@ class ContrastiveLoss(nn.Module):
         self.temperature = temperature
         self.softmax = nn.Softmax(dim=-1)
 
-    def forward(self, text_final_embed, image_final_embed):
+    def forward(self, text_final_embed, image_final_embed, additional_negatives=None):
         batch_size = text_final_embed.size(0)
         
         # Normalize embeddings for stability
         text_final_embed = F.normalize(text_final_embed, dim=-1)
         image_final_embed = F.normalize(image_final_embed, dim=-1)
 
-        # Compute logits by matrix multiplication (similarity)
+        # Initialize logits with in-batch negatives
         logits = torch.matmul(text_final_embed, image_final_embed.t()) / self.temperature
 
-        # Compute the target (positive samples, diagonal elements)
+        if additional_negatives is not None:
+            # additional_negatives should be a dict containing:
+            # - 'hard_negative_embeds': tensor of shape (batch_size, n_hard_negs, embed_dim)
+            # - 'generated_negative_embeds': tensor of shape (batch_size, n_gen_negs, embed_dim) 
+            # - 'structural_negative_embeds': tensor of shape (batch_size, n_struct_negs, embed_dim)
+            
+            all_negative_embeds = []
+            
+            for neg_type, neg_embeds in additional_negatives.items():
+                # Normalize negative embeddings
+                neg_embeds = F.normalize(neg_embeds, dim=-1)
+                
+                # Compute similarity with negative samples
+                neg_logits = torch.matmul(text_final_embed, neg_embeds.transpose(-2, -1)) / self.temperature
+                
+                # Concatenate with main logits
+                logits = torch.cat([logits, neg_logits], dim=-1)
+                
+                all_negative_embeds.append(neg_embeds)
+
+        # Compute the target (positive samples are the diagonal elements)
         targets = torch.arange(batch_size).to(text_final_embed.device)
 
         # Calculate cross entropy loss
@@ -116,6 +136,7 @@ class Verifier_Clip(nn.Module):
         v_labels: Optional[torch.LongTensor] = None,
         t_eoss: Optional[torch.LongTensor] = None,
         output_all_losses: Optional[bool] = None,
+        additional_negatives: Optional[Dict[str, torch.Tensor]] = None,
     ):
         outputs = self.backbone(
             input_ids=input_ids, 
@@ -128,31 +149,48 @@ class Verifier_Clip(nn.Module):
             return_dict=True,
         )
 
-
         llm_logits = outputs.logits
         llm_loss = outputs.loss
         llm_hidden_states = outputs.hidden_states
 
-        # 获取最后一层的隐藏状态 (batch_size, n_seq, embed_dim)
+        # Get last layer hidden states
         proj_hidden_states = self.transform(llm_hidden_states[-1])
         bsz, n_seq, _ = proj_hidden_states.shape
-        # 将最后一层的隐藏状态投影到proj_dim维度 (batch_size, n_seq, proj_dim)
+        # Project to proj_dim dimension
         proj_output = self.project_head(self.dropout(proj_hidden_states))
 
         # Extract final embeddings for text and image inputs
-        # 提取文本（问题）的表示：使用t_eoss位置的向量 （t_eoss就是输入文本的长度，表示输入文本的结束位置）
         text_final_embed = proj_output[torch.arange(bsz), t_eoss.squeeze(), :]
 
-        # 获取图像（答案）的表示：使用序列最后一个非padding位置的向量
+        # Get proof representation from last non-padding position
         index = ((n_seq - 1) - attention_mask.flip(dims=[1]).float().argmax(1)).view(-1, 1)
         image_final_embed = proj_output[torch.arange(bsz), index.squeeze(), :]
 
-        proj_loss =  self.loss_fn(text_final_embed, image_final_embed)
+        # Process additional negatives if provided
+        processed_negatives = None
+        if additional_negatives is not None:
+            processed_negatives = {}
+            for neg_type, neg_data in additional_negatives.items():
+                # neg_data should contain input_ids and attention_mask for negative samples
+                neg_outputs = self.backbone(
+                    input_ids=neg_data['input_ids'],
+                    attention_mask=neg_data['attention_mask'],
+                    use_cache=False,
+                    output_hidden_states=True,
+                    return_dict=True,
+                )
+                neg_hidden = self.transform(neg_outputs.hidden_states[-1])
+                neg_proj = self.project_head(self.dropout(neg_hidden))
+                
+                # Get embeddings from last non-padding position
+                neg_bsz, neg_seq, _ = neg_proj.shape
+                neg_index = ((neg_seq - 1) - neg_data['attention_mask'].flip(dims=[1]).float().argmax(1)).view(-1, 1)
+                neg_embeds = neg_proj[torch.arange(neg_bsz), neg_index.squeeze(), :]
+                
+                processed_negatives[neg_type] = neg_embeds
 
+        proj_loss = self.loss_fn(text_final_embed, image_final_embed, processed_negatives)
 
-        # v_loss, loss = None, None
-        # if v_labels is not None:
-        #     v_loss = self.loss_fct(v_scores, v_labels)
         loss = proj_loss + (llm_loss if labels is not None else 0)
 
         all_losses = None
@@ -161,12 +199,9 @@ class Verifier_Clip(nn.Module):
 
         return VerifierModelProjOutput(
             loss=loss,
-            # proj_score = 
-            # v_scores=v_scores,
             all_losses=all_losses,
-            text_final_embed = text_final_embed,
-            image_final_embed = image_final_embed,
-
+            text_final_embed=text_final_embed,
+            image_final_embed=image_final_embed,
         )
 
     @torch.inference_mode(mode=True)
