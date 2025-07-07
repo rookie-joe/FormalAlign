@@ -63,8 +63,6 @@ ehthumbs.db
 Thumbs.db
 
 # Data files (if they are large)
-data/cache/
-data/processed/
 *.csv
 *.json
 *.jsonl

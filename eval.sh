@@ -9,7 +9,7 @@ cd ./theorem_proving
 # Define the evaluation configuration parameters
 generator_id=mistral
 # verifierID=mma_forml4_combined
-verifierID=mma_lean
+verifierID=mma_forml4_combined
 final_id=formalalign_reproduce
 
 # Set the model checkpoint directory (this should be your trained model path)
