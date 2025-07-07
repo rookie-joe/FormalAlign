@@ -26,6 +26,12 @@ log_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/logs
 timestamp=$(date +"%Y%m%d_%H%M%S")
 log_file=${log_dir}/eval_alignment_${final_id}_${timestamp}.log
 
+# Evaluation method configuration
+# Set to True to use autoregressive certainty calculation (recommended)
+# Set to False to use teacher forcing (old method)
+use_autoregressive_certainty=True
+max_new_tokens=512
+
 # Run evaluation
 CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
   --main_process_port=29999 \
@@ -40,4 +46,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --verifier_id ${verifierID} \
   --output_dir ${output_dir} \
   --per_device_eval_batch_size 64 \
+  --use_autoregressive_certainty ${use_autoregressive_certainty} \
+  --max_new_tokens ${max_new_tokens} \
   --seed 42 2>&1 | tee "${log_file}" 

@@ -162,9 +162,32 @@ class Verifier_Clip(nn.Module):
         # Extract final embeddings for text and image inputs
         text_final_embed = proj_output[torch.arange(bsz), t_eoss.squeeze(), :]
 
-        # Get proof representation from last non-padding position
+        '''
+        # Get NL+FL representation from last non-padding position
         index = ((n_seq - 1) - attention_mask.flip(dims=[1]).float().argmax(1)).view(-1, 1)
         image_final_embed = proj_output[torch.arange(bsz), index.squeeze(), :]
+        '''
+        # Extract FL embedding from FL tokens only (after t_eoss)
+        # This ensures FL representation doesn't contain NL token information
+        # but can still attend to NL through self-attention
+        fl_embeds = []
+        for i in range(bsz):
+            t_eos_val = t_eoss[i].item() if hasattr(t_eoss[i], 'item') else t_eoss[i]
+            # Get FL tokens (from t_eoss+1 to last non-padding token)
+            fl_start = t_eos_val + 1
+            # Find last non-padding position for this sample
+            last_pos = ((n_seq - 1) - attention_mask[i].flip(dims=[0]).float().argmax(0)).item()
+            
+            if fl_start <= last_pos:
+                # Take mean of FL token embeddings
+                fl_embed = proj_output[i, fl_start:last_pos+1, :].mean(dim=0)
+            else:
+                # Fallback: if no FL tokens, use the token right after t_eoss
+                fl_embed = proj_output[i, min(fl_start, n_seq-1), :]
+            
+            fl_embeds.append(fl_embed)
+        
+        image_final_embed = torch.stack(fl_embeds, dim=0)
 
         # Process additional negatives if provided
         processed_negatives = None
@@ -182,12 +205,24 @@ class Verifier_Clip(nn.Module):
                 neg_hidden = self.transform(neg_outputs.hidden_states[-1])
                 neg_proj = self.project_head(self.dropout(neg_hidden))
                 
-                # Get embeddings from last non-padding position
+                # Extract FL embeddings for negatives using same logic
+                neg_fl_embeds = []
                 neg_bsz, neg_seq, _ = neg_proj.shape
-                neg_index = ((neg_seq - 1) - neg_data['attention_mask'].flip(dims=[1]).float().argmax(1)).view(-1, 1)
-                neg_embeds = neg_proj[torch.arange(neg_bsz), neg_index.squeeze(), :]
+                for i in range(neg_bsz):
+                    # Assume negatives also have t_eoss information
+                    neg_t_eos = neg_data.get('t_eoss', torch.zeros(neg_bsz, dtype=torch.long))
+                    t_eos_val = neg_t_eos[i].item() if hasattr(neg_t_eos[i], 'item') else neg_t_eos[i]
+                    fl_start = t_eos_val + 1
+                    last_pos = ((neg_seq - 1) - neg_data['attention_mask'][i].flip(dims=[0]).float().argmax(0)).item()
+                    
+                    if fl_start <= last_pos:
+                        fl_embed = neg_proj[i, fl_start:last_pos+1, :].mean(dim=0)
+                    else:
+                        fl_embed = neg_proj[i, min(fl_start, neg_seq-1), :]
+                    
+                    neg_fl_embeds.append(fl_embed)
                 
-                processed_negatives[neg_type] = neg_embeds
+                processed_negatives[neg_type] = torch.stack(neg_fl_embeds, dim=0)
 
         proj_loss = self.loss_fn(text_final_embed, image_final_embed, processed_negatives)
 

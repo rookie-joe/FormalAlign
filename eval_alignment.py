@@ -30,11 +30,110 @@ class InferenceArguments:
     batch_size: int = field(default=1)
     seed: int = field(default=None)
     per_device_eval_batch_size: int = field(default=4)
+    use_autoregressive_certainty: bool = field(default=True, metadata={"help": "Whether to use autoregressive certainty score calculation (recommended) or teacher forcing"})
+    max_new_tokens: int = field(default=512, metadata={"help": "Maximum number of tokens to generate for autoregressive certainty calculation"})
+
+def calculate_certainty_score_autoregressive(model, tokenizer, input_ids: torch.Tensor, attention_mask: torch.Tensor, t_eoss: torch.Tensor, max_new_tokens: int = 512) -> torch.Tensor:
+    """
+    Calculate certainty score using autoregressive generation:
+    V_cer = exp(1/n * sum(log P(FL_i,j | FL_i,<j, NL_i)))
+    
+    This version feeds only [NL] and generates FL autoregressively,
+    calculating the sequence-level log probability.
+    """
+    device = input_ids.device
+    batch_size = input_ids.size(0)
+    certainty_scores = []
+    
+    for i in range(batch_size):
+        # Get the NL part (up to t_eoss)
+        t_eos_val = t_eoss[i].item() if hasattr(t_eoss[i], 'item') else t_eoss[i]
+        nl_input_ids = input_ids[i:i+1, :t_eos_val]  # [1, nl_len]
+        nl_attention_mask = attention_mask[i:i+1, :t_eos_val]  # [1, nl_len]
+        
+        # Get the ground truth FL part for comparison
+        ground_truth_fl = input_ids[i, t_eos_val:]  # [fl_len]
+        
+        # Remove padding tokens from ground truth
+        # Find the first padding token (assuming tokenizer.pad_token_id exists)
+        pad_token_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
+        
+        # Find actual FL length (excluding padding)
+        fl_length = len(ground_truth_fl)
+        for j, token in enumerate(ground_truth_fl):
+            if token == pad_token_id:
+                fl_length = j
+                break
+        
+        if fl_length == 0:
+            # No FL tokens, assign very low certainty
+            certainty_scores.append(torch.tensor(0.001, device=device))
+            continue
+            
+        ground_truth_fl = ground_truth_fl[:fl_length]  # Remove padding
+        
+        # Generate FL autoregressively and calculate log probabilities
+        current_input = nl_input_ids.clone()  # [1, nl_len]
+        current_attention_mask = nl_attention_mask.clone()  # [1, nl_len]
+        
+        log_probs = []
+        
+        for step in range(min(fl_length, max_new_tokens)):
+            # Get model predictions for next token
+            with torch.no_grad():
+                outputs = model.backbone(
+                    input_ids=current_input,
+                    attention_mask=current_attention_mask,
+                    return_dict=True
+                )
+                
+                # Get logits for the last position
+                next_token_logits = outputs.logits[0, -1, :]  # [vocab_size]
+                
+                # Get log probabilities
+                next_token_log_probs = F.log_softmax(next_token_logits, dim=-1)
+                
+                # Get ground truth next token
+                if step < len(ground_truth_fl):
+                    ground_truth_next_token = ground_truth_fl[step]
+                    
+                    # Record log probability of ground truth token
+                    token_log_prob = next_token_log_probs[ground_truth_next_token]
+                    log_probs.append(token_log_prob)
+                    
+                    # Append ground truth token to input for next step
+                    current_input = torch.cat([
+                        current_input,
+                        ground_truth_next_token.unsqueeze(0).unsqueeze(0)
+                    ], dim=1)
+                    
+                    # Extend attention mask
+                    current_attention_mask = torch.cat([
+                        current_attention_mask,
+                        torch.ones(1, 1, device=device, dtype=current_attention_mask.dtype)
+                    ], dim=1)
+                else:
+                    break
+        
+        if len(log_probs) == 0:
+            # No tokens generated, assign very low certainty
+            certainty_scores.append(torch.tensor(0.001, device=device))
+        else:
+            # Calculate average log probability and take exponential
+            avg_log_prob = torch.stack(log_probs).mean()
+            certainty_score = torch.exp(avg_log_prob)
+            certainty_scores.append(certainty_score)
+    
+    return torch.stack(certainty_scores)
 
 def calculate_certainty_score(logits: torch.Tensor, input_ids: torch.Tensor, attention_mask: torch.Tensor, t_eoss: torch.Tensor) -> torch.Tensor:
     """
     Calculate certainty score based on equation (1) in the paper:
     V_cer = exp(1/n * sum(log P(FL_i,j | FL_i,<j, NL_i)))
+    Only calculate for FL tokens (after t_eoss position)
+    
+    NOTE: This is the old teacher forcing implementation.
+    Use calculate_certainty_score_autoregressive for better evaluation.
     """
     # Get log probabilities for next token prediction
     log_probs = F.log_softmax(logits[:, :-1], dim=-1)  # [batch_size, seq_len-1, vocab_size]
@@ -54,16 +153,24 @@ def calculate_certainty_score(logits: torch.Tensor, input_ids: torch.Tensor, att
         # t_eoss[i] is the position where formal language starts
         # We want to mask from t_eoss[i] to the end (excluding padding)
         t_eos_val = t_eoss[i].item() if hasattr(t_eoss[i], 'item') else t_eoss[i]
+        # Start from t_eoss position (since we're predicting next token)
         if t_eos_val < seq_length:
             formal_mask[i, t_eos_val:] = True
     
     # Apply both attention mask and formal mask
+    # attention_mask[:, 1:] corresponds to positions where we have valid next tokens
     valid_mask = attention_mask[:, 1:] * formal_mask
     
     # Calculate average log prob per sequence (only for the formal part)
     seq_lengths = valid_mask.sum(dim=1)
     masked_log_probs = token_log_probs * valid_mask
-    avg_log_probs = masked_log_probs.sum(dim=1) / seq_lengths.clamp(min=1)
+    
+    # Avoid division by zero - if no FL tokens, return very low certainty
+    avg_log_probs = torch.where(
+        seq_lengths > 0,
+        masked_log_probs.sum(dim=1) / seq_lengths.clamp(min=1),
+        torch.tensor(-10.0, device=token_log_probs.device)  # Low certainty for empty FL
+    )
     
     # Return exponential of average log probs
     return torch.exp(avg_log_probs)
@@ -106,6 +213,13 @@ def main():
     # Store results
     results = []
     
+    # Print evaluation method
+    if accelerator.is_main_process:
+        if inference_args.use_autoregressive_certainty:
+            print(f"Using autoregressive certainty score calculation (max_new_tokens={inference_args.max_new_tokens})")
+        else:
+            print("Using teacher forcing certainty score calculation")
+    
     # Evaluation loop
     for batch in tqdm(dataloader, desc="Evaluating", disable=not accelerator.is_main_process):
         with torch.inference_mode():
@@ -132,12 +246,18 @@ def main():
             image_embed_norm = outputs.image_final_embed / outputs.image_final_embed.norm(dim=-1, keepdim=True)
             
             # Calculate scores
-            certainty_score = calculate_certainty_score(
-                logits=logits,
-                input_ids=batch['input_ids'],
-                attention_mask=batch['attention_mask'],
-                t_eoss=batch['t_eoss']
-            )
+            if inference_args.use_autoregressive_certainty:
+                certainty_score = calculate_certainty_score_autoregressive(
+                    model, tokenizer, batch['input_ids'], batch['attention_mask'], batch['t_eoss'], 
+                    max_new_tokens=inference_args.max_new_tokens
+                )
+            else:
+                certainty_score = calculate_certainty_score(
+                    logits=logits,
+                    input_ids=batch['input_ids'],
+                    attention_mask=batch['attention_mask'],
+                    t_eoss=batch['t_eoss']
+                )
             similarity_score = calculate_similarity_score(
                 text_embed_norm,  # Natural language embedding (at t_eoss position)
                 image_embed_norm  # Full sequence embedding (includes formal language)

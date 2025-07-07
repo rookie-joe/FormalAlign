@@ -16,8 +16,9 @@ final_id=formalalign_reproduce
 checkpoint_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/checkpoints/${generator_id}/${final_id}_${verifierID}
 
 # test data dir
-test_data_dir=../data/forml4/misalignment/formatted_random_test_clip.jsonl
+test_data_dir=../data/minimal_test/formatted_random_test_clip.jsonl
 # ../data/minif2f/misalignment/test_clip.jsonl
+# ../data/forml4/misalignment/formatted_random_test_clip.jsonl
 
 # Set log file path
 log_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/logs
