@@ -15,8 +15,9 @@ final_id=formalalign_reproduce
 checkpoint_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/checkpoints/${generator_id}/${final_id}_${verifierID}
 
 # test data dir
-test_data_dir=../data/minif2f/misalignment/test_clip.jsonl
-# test_data_dir=../data/forml4/misalignment/formatted_basic_test_clip.jsonl
+test_data_dir=../data/minimal_test/formatted_basic_test_clip.jsonl
+# ../data/minif2f/misalignment/test_clip.jsonl
+# ../data/forml4/misalignment/formatted_random_test_clip.jsonl
 
 # Set output directory
 output_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/eval_results/alignment
@@ -45,7 +46,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --generator_id ${generator_id} \
   --verifier_id ${verifierID} \
   --output_dir ${output_dir} \
-  --per_device_eval_batch_size 64 \
+  --per_device_eval_batch_size 32 \
   --use_autoregressive_certainty ${use_autoregressive_certainty} \
   --max_new_tokens ${max_new_tokens} \
   --seed 42 2>&1 | tee "${log_file}" 
