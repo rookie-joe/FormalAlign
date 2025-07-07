@@ -63,10 +63,10 @@ ehthumbs.db
 Thumbs.db
 
 # Data files (if they are large)
-*.csv
-*.json
-*.jsonl
-*.parquet
+# *.csv
+# *.json
+# *.jsonl
+# *.parquet
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints 
