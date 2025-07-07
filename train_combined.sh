@@ -31,7 +31,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --project_dim 4096 \
   --clip_temperature 0.05 \
   --contrastive_weight 1.0 \
-  --ce_weight 0.5 \
+  --ce_weight 1.0 \
   --data_dir ../data/mma_forml4/train.jsonl \
   --data_id mma_forml4_combined \
   --target_set train \
@@ -51,7 +51,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --gradient_checkpointing True \
   --learning_rate 5e-6 \
   --weight_decay 0.01 \
-  --save_steps 200 \
+  --save_steps 50 \
   --lr_scheduler_type "linear" \
   --warmup_ratio 0.03 \
   --save_epoches 1 \
