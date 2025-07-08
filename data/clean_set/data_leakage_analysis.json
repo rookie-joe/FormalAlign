@@ -1,0 +1,421 @@
+{
+  "train_file": "mma_forml4/train.jsonl",
+  "train_count": 98929,
+  "test_files": {
+    "forml4/misalignment/formatted_random_test_clip.jsonl": {
+      "count": 950,
+      "format": [
+        "idx",
+        "input",
+        "outputs"
+      ],
+      "removed_count": 10,
+      "clean_count": 940
+    },
+    "forml4/misalignment/formatted_basic_test_clip.jsonl": {
+      "count": 970,
+      "format": [
+        "idx",
+        "input",
+        "outputs"
+      ],
+      "removed_count": 59,
+      "clean_count": 911
+    },
+    "minif2f/misalignment/valid_clip.jsonl": {
+      "count": 244,
+      "format": [
+        "idx",
+        "input",
+        "outputs"
+      ],
+      "removed_count": 0,
+      "clean_count": 244
+    },
+    "minif2f/misalignment/test_clip.jsonl": {
+      "count": 243,
+      "format": [
+        "idx",
+        "input",
+        "outputs"
+      ],
+      "removed_count": 0,
+      "clean_count": 243
+    }
+  },
+  "exact_matches": {
+    "forml4/misalignment/formatted_random_test_clip.jsonl": [
+      [
+        48157,
+        84,
+        "statement in natural language: prove that if a function \\( f \\) is an isometry, then it is lipschitz..."
+      ],
+      [
+        73772,
+        147,
+        "statement in natural language: prove that the derivative of a function plus a constant is equal to t..."
+      ],
+      [
+        72039,
+        230,
+        "statement in natural language: prove that the degree of the constant polynomial 1 is 0. translate th..."
+      ],
+      [
+        59256,
+        286,
+        "statement in natural language: prove that the interval [a, b) is a measurable set. translate the sta..."
+      ],
+      [
+        88386,
+        476,
+        "statement in natural language: prove that the derivative of the cosine function is the negative sine..."
+      ],
+      [
+        66353,
+        652,
+        "statement in natural language: prove that the function which calculates the shortest distance from a..."
+      ],
+      [
+        47150,
+        658,
+        "statement in natural language: prove that for any two numbers 'a' and 'b', the open interval (a, b) ..."
+      ],
+      [
+        81333,
+        682,
+        "statement in natural language: prove that if \\( a₁ ≤ a₂ \\), then the closed interval from \\( a₂ \\) t..."
+      ],
+      [
+        89950,
+        844,
+        "statement in natural language: prove that composing any function \\(f\\) with the identity function re..."
+      ],
+      [
+        61343,
+        898,
+        "statement in natural language: prove that the number of elements in the set of natural numbers from ..."
+      ]
+    ],
+    "forml4/misalignment/formatted_basic_test_clip.jsonl": [
+      [
+        66265,
+        16,
+        "statement in natural language: prove that the hyperbolic sine function (sinh) is measurable. transla..."
+      ],
+      [
+        88775,
+        17,
+        "statement in natural language: prove that the cosine function is measurable. translate the statement..."
+      ],
+      [
+        41227,
+        18,
+        "statement in natural language: prove that the hyperbolic cosine function (cosh) is measurable. trans..."
+      ],
+      [
+        50616,
+        22,
+        "statement in natural language: prove that the logarithm function (log) is measurable. translate the ..."
+      ],
+      [
+        12935,
+        24,
+        "statement in natural language: prove that for any function \\( g \\), the function \\( \\text{measurable..."
+      ],
+      [
+        66265,
+        30,
+        "statement in natural language: prove that the hyperbolic sine function (sinh) is measurable. transla..."
+      ],
+      [
+        88775,
+        33,
+        "statement in natural language: prove that the cosine function is measurable. translate the statement..."
+      ],
+      [
+        39099,
+        34,
+        "statement in natural language: prove that the arccosine function is measurable. translate the statem..."
+      ],
+      [
+        36151,
+        39,
+        "statement in natural language: prove that the essential supremum of the zero function is zero. trans..."
+      ],
+      [
+        15129,
+        47,
+        "statement in natural language: given a premeasure `p` and a set `s`, prove that the outer measure of..."
+      ],
+      [
+        24970,
+        82,
+        "statement in natural language: prove that the positive tangent cone of the universal set (the set co..."
+      ],
+      [
+        43029,
+        101,
+        "statement in natural language: prove that the constant function that always returns zero is infinite..."
+      ],
+      [
+        995,
+        108,
+        "statement in natural language: prove that the sine function (sin) is continuous. translate the state..."
+      ],
+      [
+        35162,
+        110,
+        "statement in natural language: prove that every real number is the logarithm of some positive real n..."
+      ],
+      [
+        81557,
+        111,
+        "statement in natural language: prove that the hyperbolic sine function (sinh) is continuous. transla..."
+      ],
+      [
+        74254,
+        112,
+        "statement in natural language: prove that the cosine function (cos) is continuous. translate the sta..."
+      ],
+      [
+        81557,
+        118,
+        "statement in natural language: prove that the hyperbolic sine function (sinh) is continuous. transla..."
+      ],
+      [
+        32762,
+        119,
+        "statement in natural language: prove that the hyperbolic cosine function (cosh) is continuous. trans..."
+      ],
+      [
+        12864,
+        127,
+        "statement in natural language: prove that the cosine function (cos) is continuous for all real numbe..."
+      ],
+      [
+        59409,
+        128,
+        "statement in natural language: prove that 1 is less than or equal to π/2. translate the statement in..."
+      ],
+      [
+        45390,
+        129,
+        "statement in natural language: prove that π / 2 is less than or equal to 2. translate the statement ..."
+      ],
+      [
+        18482,
+        141,
+        "statement in natural language: prove that the cosine of π (pi) radians is equal to -1. translate the..."
+      ],
+      [
+        14393,
+        148,
+        "statement in natural language: prove that the function `boxes`, which maps a prepartition of a set t..."
+      ],
+      [
+        59887,
+        153,
+        "statement in natural language: prove that no element belongs to the empty set. translate the stateme..."
+      ],
+      [
+        94207,
+        158,
+        "statement in natural language: prove that for any interval \\(i\\), there exists an element \\(x\\) that..."
+      ],
+      [
+        50094,
+        162,
+        "statement in natural language: prove that for any interval \\(i\\), the upper bound of \\(i\\) is an ele..."
+      ],
+      [
+        76232,
+        183,
+        "statement in natural language: prove that the bottom element (⊥) of the type `withbot (box ι)` corre..."
+      ],
+      [
+        2814,
+        218,
+        "statement in natural language: prove that the logarithm function (log) is strictly concave on the se..."
+      ],
+      [
+        32304,
+        222,
+        "statement in natural language: prove that the empty set is an upper set. translate the statement in ..."
+      ],
+      [
+        21983,
+        225,
+        "statement in natural language: prove that the empty set is a lower set. translate the statement in n..."
+      ],
+      [
+        66586,
+        233,
+        "statement in natural language: prove that a set 's' is an upper set if and only if for every element..."
+      ],
+      [
+        78860,
+        345,
+        "statement in natural language: prove that the interpretation of the zero derivation as a linear map ..."
+      ],
+      [
+        14518,
+        370,
+        "statement in natural language: prove that the function `tosubsemiring`, which converts a subring of ..."
+      ],
+      [
+        39228,
+        373,
+        "statement in natural language: prove that 0 and a number 'x' are coprime if and only if 'x' is a uni..."
+      ],
+      [
+        67767,
+        507,
+        "statement in natural language: prove that the set containing only the element 1 is a subset of a set..."
+      ],
+      [
+        38264,
+        533,
+        "statement in natural language: prove that a number 'a' belongs to the closed interval [a, b] if and ..."
+      ],
+      [
+        63799,
+        536,
+        "statement in natural language: prove that a number 'b' belongs to the interval (a, b] if and only if..."
+      ],
+      [
+        55539,
+        549,
+        "statement in natural language: prove that the set of natural numbers less than or equal to a given n..."
+      ],
+      [
+        40299,
+        564,
+        "statement in natural language: prove that for any two positive natural numbers 'a' and 'b', 'a + 1' ..."
+      ],
+      [
+        45560,
+        573,
+        "statement in natural language: prove that the function that swaps the elements of a pair is its own ..."
+      ],
+      [
+        38264,
+        624,
+        "statement in natural language: prove that a number 'a' belongs to the closed interval [a, b] if and ..."
+      ],
+      [
+        47150,
+        629,
+        "statement in natural language: prove that for any two numbers 'a' and 'b', the open interval (a, b) ..."
+      ],
+      [
+        65826,
+        635,
+        "statement in natural language: prove that for any two numbers 'a' and 'b', the open interval (a, b) ..."
+      ],
+      [
+        64950,
+        665,
+        "statement in natural language: prove that updating a sequence `q` at index 0 with a value `z` does n..."
+      ],
+      [
+        38739,
+        671,
+        "statement in natural language: prove that the cauchy completion of the real number 1 is equal to 1. ..."
+      ],
+      [
+        75261,
+        679,
+        "statement in natural language: prove that the cauchy product of two real numbers, represented as cau..."
+      ],
+      [
+        34762,
+        686,
+        "statement in natural language: prove that for any boolean value `a`, if `a` is not equal to `true`, ..."
+      ],
+      [
+        90998,
+        687,
+        "statement in natural language: prove that two matrices m and n are equal if and only if all of their..."
+      ],
+      [
+        69799,
+        728,
+        "statement in natural language: given a multiset 's' and an element 'a', prove that 's' is equal to a..."
+      ],
+      [
+        59872,
+        735,
+        "statement in natural language: prove that every non-negative real number is the square of some real ..."
+      ],
+      [
+        77464,
+        812,
+        "statement in natural language: prove that for any integers a, b, and c, if a divides b and b divides..."
+      ],
+      [
+        80767,
+        821,
+        "statement in natural language: prove that converting a list to a sequence and then back to a list re..."
+      ],
+      [
+        45316,
+        836,
+        "statement in natural language: prove that the function `trop`, which maps a real number to its corre..."
+      ],
+      [
+        81895,
+        837,
+        "statement in natural language: prove that the function `untrop` is a right inverse of the function `..."
+      ],
+      [
+        66331,
+        897,
+        "statement in natural language: prove that a specific function called `transassocreparamaux` is conti..."
+      ],
+      [
+        16841,
+        909,
+        "statement in natural language: prove that an element \\( x \\) belongs to the set of fixed points of a..."
+      ],
+      [
+        51564,
+        943,
+        "statement in natural language: prove that the empty set is bounded. translate the statement in natur..."
+      ],
+      [
+        92845,
+        948,
+        "statement in natural language: prove that the universal set (the set containing all elements) is cob..."
+      ],
+      [
+        59626,
+        956,
+        "statement in natural language: prove that a sphere with center x and radius 0 consists only of the p..."
+      ]
+    ],
+    "minif2f/misalignment/valid_clip.jsonl": [],
+    "minif2f/misalignment/test_clip.jsonl": []
+  },
+  "cleaned_files": {
+    "forml4/misalignment/formatted_random_test_clip.jsonl": {
+      "clean_file": "clean_set/clean_formatted_random_test_clip.jsonl",
+      "removed_count": 10,
+      "clean_count": 940
+    },
+    "forml4/misalignment/formatted_basic_test_clip.jsonl": {
+      "clean_file": "clean_set/clean_formatted_basic_test_clip.jsonl",
+      "removed_count": 59,
+      "clean_count": 911
+    },
+    "minif2f/misalignment/valid_clip.jsonl": {
+      "clean_file": "clean_set/clean_valid_clip.jsonl",
+      "removed_count": 0,
+      "clean_count": 244
+    },
+    "minif2f/misalignment/test_clip.jsonl": {
+      "clean_file": "clean_set/clean_test_clip.jsonl",
+      "removed_count": 0,
+      "clean_count": 243
+    }
+  }
+}

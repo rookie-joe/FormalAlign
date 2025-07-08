@@ -15,13 +15,18 @@ final_id=formalalign_reproduce
 checkpoint_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/checkpoints/${generator_id}/${final_id}_${verifierID}
 
 # test data dir
-data_id=forml4
-test_data_dir=../data/${data_id}/misalignment/formatted_random_test_clip.jsonl
-# ../data/minif2f/misalignment/test_clip.jsonl
-# ../data/forml4/misalignment/formatted_random_test_clip.jsonl
+# data_id=clean_set
+# set_id=clean_formatted_random_test_clip
+# # test_data_dir=../data/${data_id}/formatted_${set_id}_test_clip.jsonl
+# test_data_dir=../data/${data_id}/${set_id}.jsonl
+data_id=minimal_test
+set_id=minif2f_test
+test_data_dir=../data/${data_id}/${set_id}.jsonl
 
 # Set output directory
-output_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/eval_results/alignment
+output_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/eval_results/${generator_id}_${verifierID}/${data_id}_${set_id}
+# create output directory if it doesn't exist
+mkdir -p ${output_dir}
 
 # Set log file path
 log_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/logs

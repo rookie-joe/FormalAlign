@@ -7,7 +7,6 @@ export CUDA_LAUNCH_BLOCKING=1
 cd ./theorem_proving
 
 # Define the training configuration parameters
-n_solution=10
 generator_id=mistral
 verifierID=mma_forml4_combined
 checkpoint_dir='mistralai/Mistral-7B-v0.1'  # Base model directory
@@ -40,22 +39,21 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --generator_id ${generator_id} \
   --verifier_id ${verifierID} \
   --dedup True \
-  --per_problem_sampling_solution ${n_solution} \
   --loss_level token \
   --loss_on_llm True \
   --num_train_epoches 1 \
-  --eval_steps 200 \
+  --eval_steps 10000 \
   --per_device_train_batch_size 32 \
   --per_device_eval_batch_size 64 \
   --gradient_accumulation_steps 4 \
   --gradient_checkpointing True \
-  --learning_rate 5e-6 \
+  --learning_rate 2e-6 \
   --weight_decay 0.01 \
-  --save_steps 50 \
+  --save_steps 100 \
   --lr_scheduler_type "linear" \
   --warmup_ratio 0.03 \
   --save_epoches 1 \
-  --save_best True \
+  --save_best False \
   --save_total_limit 1 \
   --logging_dir None \
   --logging_steps 10 \
