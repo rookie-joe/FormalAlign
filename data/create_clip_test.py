@@ -30,9 +30,9 @@ def convert_to_clip_format(input_file, output_file):
             f.write(json.dumps(entry) + '\n')
 
 if __name__ == '__main__':
-    # input_file = 'minif2f/misalignment/test_misalignment.json'
+    input_file = 'minif2f/misalignment/valid_misalignment.json'
     # output_file = 'minif2f/misalignment/test_clip.jsonl'
-    input_file = 'forml4/misalignment/formatted_random_test.json'
+    # input_file = 'forml4/misalignment/formatted_random_test.json'
     output_file = input_file.replace('.json', '_clip.jsonl')
     
     # Ensure output directory exists

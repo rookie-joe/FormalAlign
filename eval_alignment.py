@@ -38,7 +38,7 @@ def calculate_certainty_score_autoregressive(model, tokenizer, input_ids: torch.
     Calculate certainty score using autoregressive generation:
     V_cer = exp(1/n * sum(log P(FL_i,j | FL_i,<j, NL_i)))
     
-    This version feeds only [NL] and generates FL autoregressively,
+    Note:This version feeds only [NL] and generates FL autoregressively,
     calculating the sequence-level log probability.
     """
     device = input_ids.device

@@ -15,7 +15,8 @@ final_id=formalalign_reproduce
 checkpoint_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/checkpoints/${generator_id}/${final_id}_${verifierID}
 
 # test data dir
-test_data_dir=../data/minimal_test/formatted_basic_test_clip.jsonl
+data_id=forml4
+test_data_dir=../data/${data_id}/misalignment/formatted_random_test_clip.jsonl
 # ../data/minif2f/misalignment/test_clip.jsonl
 # ../data/forml4/misalignment/formatted_random_test_clip.jsonl
 
@@ -25,28 +26,26 @@ output_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/eval_results/
 # Set log file path
 log_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/logs
 timestamp=$(date +"%Y%m%d_%H%M%S")
-log_file=${log_dir}/eval_alignment_${final_id}_${timestamp}.log
+log_file=${log_dir}/eval_alignment_${final_id}_${timestamp}_${data_id}.log
 
 # Evaluation method configuration
 # Set to True to use autoregressive certainty calculation (recommended)
 # Set to False to use teacher forcing (old method)
-use_autoregressive_certainty=True
-max_new_tokens=512
 
 # Run evaluation
-CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
+CUDA_VISIBLE_DEVICES=0,1,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
   --main_process_port=29999 \
-  --config_file ../configs/zero1.yaml \
+  --config_file ../configs/zero1_3gpu.yaml \
   ../eval_alignment.py \
   --model_name_or_path ${checkpoint_dir} \
   --project_dim 4096 \
   --data_dir ${test_data_dir} \
-  --data_id minif2f_test \
+  --data_id ${data_id} \
   --target_set test \
   --generator_id ${generator_id} \
   --verifier_id ${verifierID} \
   --output_dir ${output_dir} \
-  --per_device_eval_batch_size 32 \
-  --use_autoregressive_certainty ${use_autoregressive_certainty} \
-  --max_new_tokens ${max_new_tokens} \
+  --per_device_eval_batch_size 64 \
+  --use_autoregressive_certainty True \
+  --max_new_tokens 512 \
   --seed 42 2>&1 | tee "${log_file}" 
