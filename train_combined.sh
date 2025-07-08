@@ -22,9 +22,9 @@ log_file=${log_dir}/training_${final_id}_${timestamp}.log
 
 # Activate multi-GPU training using CUDA and Accelerate
 # CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch \
-CUDA_VISIBLE_DEVICES=0,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
+CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
   --main_process_port=29999 \
-  --config_file ../configs/zero1_2gpu.yaml \
+  --config_file ../configs/zero1.yaml \
   ../train_clip.py \
   --model_name_or_path ${checkpoint_dir} \
   --project_dim 4096 \
