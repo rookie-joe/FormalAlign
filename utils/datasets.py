@@ -16,13 +16,13 @@ import pdb
 
 
 def read_jsonl(path: str):
+    # if jsonl, return list of json objects
     try:
         with open(path) as fh:
            return [json.loads(line) for line in fh.readlines() if line]
     except:
+    # if json, return json object
         return json.load(open(path, 'r', encoding= 'utf-8'))
-
-
 
 
 def get_few_shot_prompt(data_dir, prompt_file):
@@ -256,8 +256,10 @@ def make_test_verifierclip_data_module(tokenizer: transformers.PreTrainedTokeniz
                         tokenizer=tokenizer, 
                         data_dir=data_args.data_dir,
                         target_set=data_args.target_set,
-                        generator_id=data_args.generator_id, 
-                        per_problem_sampling_solution=-1, 
+                        verifier_id=data_args.verifier_id,
+                        data_id=data_args.data_id,
+                        per_problem_sampling_solution=-1,
+                        loss_on_llm=data_args.loss_on_llm
                     )
     return test_dataset
 
@@ -594,7 +596,6 @@ class VerifierDataset(torch.utils.data.Dataset):
 
 #     return formatted_list
 
-    
 
 class VerifierClipDataset(torch.utils.data.Dataset):
     """Right Padding"""
@@ -633,7 +634,6 @@ class VerifierClipDataset(torch.utils.data.Dataset):
         else:
             per_problem_sampling_solution = len(self.examples[0]['outputs'])
         
-
         if dedup:
             for ex in self.examples:
                 dedup_outputs = []

@@ -32,10 +32,11 @@ class DataArguments:
     generator_id: str = field(default='llama7b-2-ep2')
     data_id: str = field(default='test')
     verifier_id: str = field(default='default')
-    
+    per_problem_sampling_solution: int = field(default=5)
     verifier_output_dir: str = field(default='eval_results/gsm8k/verifier', metadata={"help": "Path to save the responses and metrics."})
     generator_metric_dir: str = field(default='eval_results/gsm8k/generator_with_verifier', metadata={"help": "Path to save the responses and metrics."})
     easy : bool = field(default=True)
+    loss_on_llm: bool = field(default=True)
 
 @dataclass
 class InferenceArguments:
@@ -82,18 +83,17 @@ def main():
     if inference_args.seed is not None:
         set_random_seed(inference_args.seed)
 
-
     accelerator = Accelerator()
-
     verifier, tokenizer = load_verifier_clip(model_args)
 
     generator_id_list = data_args.generator_id.split(",")
     for item in generator_id_list:
+        # data_args: see class DataArguments
         data_args.generator_id = item
         verifier_outputs_file, verifier_metrics_file, generator_metrics_file = get_save_files(model_args, data_args,
                                                                                               inference_args)
+                                                                                            
         dataset = make_test_verifierclip_data_module(tokenizer, data_args)
-
         dataloader = make_testing_dataloader(dataset, batch_size=inference_args.batch_size)
 
         n_question = dataset.n_question
@@ -107,7 +107,9 @@ def main():
         verifier_acc_metric = VerifierClassificationAcc(n_data=len(dataset))
         verifier_mpk_metric = VerifierMPk_original(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
 
+        # another one???
         dataloader = accelerator.prepare_data_loader(dataloader, device_placement=True)
+
 
         verifier_outputs = []
         for data in dataset:
@@ -142,12 +144,19 @@ def main():
                 logits = output.logits
 
             # 1️⃣ Certainty score
+            
             labels = batch['labels']  # shape: (B, T)
+            print("labels.shape: ", labels.shape)
+            print("logits.shape: ", logits.shape)
+            
             shift_logits = logits[:, :-1, :].contiguous()
             shift_labels = labels[:, 1:].contiguous()
+            print("shift_labels min/max:", shift_labels.min().item(), shift_labels.max().item())
+            
 
             # log_softmax + gather target token prob
-            log_probs = F.log_softmax(shift_logits, dim=-1)
+            log_probs = F.log_softmax(shift_logits, dim=-1) # [batch, seq_len, vocab_size]
+            print("vocab_size:", log_probs.size(-1))
             token_log_probs = torch.gather(log_probs, -1, shift_labels.unsqueeze(-1)).squeeze(-1)
 
             # mask padding (if there is padding_token_id)

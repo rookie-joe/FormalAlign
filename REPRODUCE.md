@@ -13,3 +13,8 @@
 - reproduction v2:
     - `train_clip`: 原版（with minimal change）
     - `eval_clip+cert`: alignnment score = embedding simlarity + certainty
+        - build model tokenizer: padding = right, load model tokenizer: padding = left -> right (`utils/models.py/load_model`)。评估与训练保持一致。
+
+```
+DataArguments(data_dir='../data/clean_set/minimal.jsonl', target_set='test', generator_id='mistral', data_id='clean_set', verifier_id='mma_forml4_combined_v2', verifier_output_dir='/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/eval_results/mistral_mma_forml4_combined_v2/clean_set_minimal', generator_metric_dir='eval_results/gsm8k/generator_with_verifier', easy=True)
+```

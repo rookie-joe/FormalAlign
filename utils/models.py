@@ -128,7 +128,8 @@ def load_model(model_args):
     print(f"+ [Model] Initializing Tokenizer: {model_args.model_name_or_path}")
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
-        padding_side="left",
+        # padding_side="left", # incorrect!
+        padding_side="right", # left -> right, to keep consistent with training (build_model)
         use_fast=False,
     )
 

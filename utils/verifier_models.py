@@ -24,6 +24,7 @@ import shutil
 @dataclass
 class VerifierModelProjOutput(ModelOutput):
     loss: Optional[torch.FloatTensor] = None
+    logits: Optional[torch.FloatTensor] = None
     proj_hiddens: torch.FloatTensor = None
     all_losses: Optional[Dict[str, torch.FloatTensor]] = None
     seq_v_scores: Optional[Dict[str, torch.FloatTensor]] = None
@@ -157,6 +158,7 @@ class Verifier_Clip(nn.Module):
 
         return VerifierModelProjOutput(
             loss=loss,
+            logits=llm_logits,
             # proj_score = 
             # v_scores=v_scores,
             all_losses=all_losses,
