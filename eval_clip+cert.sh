@@ -31,9 +31,9 @@ log_file=${log_dir}/eval_alignment_${final_id}_${timestamp}_${data_id}.log
 
 
 # Run evaluation
-CUDA_VISIBLE_DEVICES=0,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
+CUDA_VISIBLE_DEVICES=0 /research/projects/trans_llm/Zeru_Shi/conda/envs/formalalign/bin/accelerate launch \
   --main_process_port=29999 \
-  --config_file ../configs/zero1_3gpu.yaml \
+  --config_file ../configs/zero1.yaml \
   ../eval_clip+cert.py \
   --model_name_or_path ${checkpoint_dir} \
   --project_dim 4096 \

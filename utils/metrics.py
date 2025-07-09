@@ -39,13 +39,18 @@ class VerifierClassificationAcc:
         bsz, n_seq = v_labels.shape
         index = ((n_seq - 1) - v_labels.ne(IGNORE_INDEX).flip(dims=[1]).float().argmax(1)).view(-1, 1)
         
-        scores = v_scores.squeeze(-1).gather(1, index).squeeze()
+        print("v_scores.shape:", v_scores.shape)
+        print("index.shape:", index.shape)
+        print("index:", index)
+        print("v_scores:", v_scores)
+        # scores = v_scores.squeeze(-1).gather(1, index).squeeze()
+        scores = v_scores.gather(0, index.squeeze())
         gts = v_labels.gather(1, index).squeeze()
         
         self.scores.append(scores.tolist())
         self.gts.append(gts.tolist())
 
-    def get_metric(self, thres: float=0.5, reset=True):
+    def get_metric(self, thres: float=0.7, reset=True):
         if not self.gather:
             if self.world_size != 1:
                 gathered_scores, gathered_gts = tuple([None] * self.world_size for _ in range(2))
@@ -290,5 +295,39 @@ class VerifierMPk_original:
 
 
 
+class AlignmentMetric:
+    def __init__(self, n_data: int):
+        self.n_data = n_data
+        self.scores = []
+        self.gts = []
 
+    @torch.inference_mode()
+    def __call__(self, v_scores: torch.FloatTensor, v_labels: torch.LongTensor):
+        v_scores = v_scores.view(-1).tolist()  # [B]
+        v_labels = v_labels.view(-1).tolist()  # [B]，你的 label 是 per-output label
+        self.scores.extend(v_scores)
+        self.gts.extend(v_labels)
 
+    def get_metric(self, thres: float=0.5, reset=True):
+        # clear
+        if reset:
+            self.scores = []
+            self.gts = []
+            self.gather = False
+
+        pred = (np.array(self.scores) > thres)
+        corrs = np.where(np.array(self.gts).astype(bool), pred, ~pred)
+        if len(corrs) == 0:
+            return 0.0, 0.0
+        else:
+            acc = (sum(corrs) / len(corrs))
+
+        tp = np.sum(np.array(self.gts) & pred)
+        fn = np.sum(np.array(self.gts) & ~pred)
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+
+        # clear
+        if reset:
+            self.scores = []
+            self.gts = []
+        return acc, recall
