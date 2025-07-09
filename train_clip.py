@@ -129,7 +129,8 @@ def main():
         logging_dir = os.path.join(output_args.logging_dir, project_name)
 
         os.makedirs(logging_dir, exist_ok=True)
-        wandb_id =  output_args.save_dir
+        # wandb_id =  output_args.save_dir
+        wandb_id = os.path.basename(output_args.save_dir)
         wandb.init(id=wandb_id, dir=logging_dir, config=config_args_dict)
 
     # training
