@@ -1,7 +1,7 @@
 from utils.states import set_random_seed
 from utils.verifier_models import load_verifier_clip
 from utils.datasets import make_test_verifier_data_module, make_testing_dataloader, make_test_verifierclip_data_module
-from utils.metrics import VerifierClipClassificationAcc_original, VerifierClipMPk_original, VerifierClassificationAcc, VerifierMPk_original, AlignmentMetric
+from utils.metrics import VerifierClipClassificationAcc_original, VerifierClipMPk_original, VerifierClassificationAcc, VerifierMPk_original, AlignmentMetric, AlignmentMPk
 from accelerate import Accelerator
 from torch.nn import functional as F
 
@@ -88,29 +88,23 @@ def main():
 
     generator_id_list = data_args.generator_id.split(",")
     for item in generator_id_list:
-        # data_args: see class DataArguments
         data_args.generator_id = item
-        verifier_outputs_file, verifier_metrics_file, generator_metrics_file = get_save_files(model_args, data_args,
-                                                                                              inference_args)
-                                                                                            
+
+        # ⬇️ prepare save files, dataset, dataloader
+        verifier_outputs_file, verifier_metrics_file, generator_metrics_file = get_save_files(
+            model_args, data_args, inference_args
+        )
         dataset = make_test_verifierclip_data_module(tokenizer, data_args)
         dataloader = make_testing_dataloader(dataset, batch_size=inference_args.batch_size)
-
-        n_question = dataset.n_question
-        per_problem_sampling_solution = dataset.per_problem_sampling_solution
-
-        # - eval_with_clip: only use clip (cosine simlarity) as alignment score
-        # verifier_acc_metric = VerifierClipClassificationAcc_original(n_data=len(dataset))
-        # verifier_mpk_metric = VerifierClipMPk_original(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
-
-        # - eval_with_clip+cert: use clip + cert (certainty score) as alignment score
-        verifier_acc_metric = AlignmentMetric(n_data=len(dataset))
-        # verifier_mpk_metric = VerifierMPk_original(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
-
-        # another one???
         dataloader = accelerator.prepare_data_loader(dataloader, device_placement=True)
 
+        # ⬇️ re-init metric inside loop (avoid accumulating results)
+        n_question = dataset.n_question
+        per_problem_sampling_solution = dataset.per_problem_sampling_solution
+        verifier_acc_metric = AlignmentMetric(n_data=len(dataset))
+        verifier_mpk_metric = AlignmentMPk(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
 
+        # prepare verifier_outputs
         verifier_outputs = []
         for data in dataset:
             if len(verifier_outputs) == 0 or verifier_outputs[-1]['idx'] != data['idx1']:
@@ -125,124 +119,105 @@ def main():
                 'label': data['v_class'],
             })
 
-
         verifier.eval().cuda()
         accelerator.unwrap_model(verifier).gradient_checkpointing_enable()
         accelerator.wait_for_everyone()
 
-        dataloader_iterator = tqdm(enumerate(dataloader), total=len(dataloader), desc='Evaluation') if accelerator.is_main_process else enumerate(dataloader)
-        all_idxs1_list, all_idxs2_list, all_vscores_list, all_labels_list =  tuple([] for _ in range(4))
+        dataloader_iterator = tqdm(enumerate(dataloader), total=len(dataloader), desc='Evaluation') \
+                            if accelerator.is_main_process else enumerate(dataloader)
+
         for _, batch in dataloader_iterator:
-            # filter batch to only include necessary keys
+            # v_class是groundtruth bool, 而labels是next token prediction
             batch_input = {k: v for k, v in batch.items() if k in ('input_ids', 'attention_mask', 'labels', 'v_labels', 't_eoss')}
-            # get verifier output
-            with torch.inference_mode(mode=True):
+
+            with torch.inference_mode():
                 output = verifier(**batch_input)
-                # v_scores = output.v_scores
                 image_final_embed = output.image_final_embed
                 text_final_embed = output.text_final_embed
                 logits = output.logits
 
-            # 1️⃣ Certainty score
-            
-            labels = batch['labels']  # shape: (B, T)
+            # Certainty Score
+            labels = batch['labels'] # here labels mean causal token labels for token prediction (B, seq_len)
             shift_logits = logits[:, :-1, :].contiguous()
             shift_labels = labels[:, 1:].contiguous()
-            # print("labels.shape: ", labels.shape)
-            # print("logits.shape: ", logits.shape)
-            # print("shift_labels min/max:", shift_labels.min().item(), shift_labels.max().item())
-
-            '''
-            # log_softmax + gather target token prob
-            log_probs = F.log_softmax(shift_logits, dim=-1) # [batch, seq_len, vocab_size]
-            print("vocab_size:", log_probs.size(-1))
-            token_log_probs = torch.gather(log_probs, -1, shift_labels.unsqueeze(-1)).squeeze(-1)
-
-            # mask padding (if there is padding_token_id)
-            if tokenizer.pad_token_id is not None:
-                non_pad_mask = shift_labels.ne(tokenizer.pad_token_id)
-                token_log_probs = token_log_probs * non_pad_mask
-
-                # get valid token number
-                lengths = non_pad_mask.sum(dim=1).float().clamp(min=1)
-            else:
-                lengths = torch.ones(token_log_probs.size(0), device=token_log_probs.device) * token_log_probs.size(1)
-
-            avg_log_probs = (token_log_probs.sum(dim=1) / lengths)  # average log-prob per sequence
-            certainty_scores = torch.exp(avg_log_probs)  # exponent
-            '''
-
-            # 替换 -100 为 0，避免越界 (TODO: check if this is correct)
             safe_shift_labels = shift_labels.clone()
-            safe_shift_labels[safe_shift_labels == -100] = 0  # 这里 0 是任意合法索引
-
+            safe_shift_labels[safe_shift_labels == -100] = 0
             log_probs = F.log_softmax(shift_logits, dim=-1)
             token_log_probs = torch.gather(log_probs, -1, safe_shift_labels.unsqueeze(-1)).squeeze(-1)
-
-            # 生成 mask，排除 pad 和 ignore 的 token
             if tokenizer.pad_token_id is not None:
                 non_pad_mask = (shift_labels != tokenizer.pad_token_id) & (shift_labels != -100)
             else:
                 non_pad_mask = (shift_labels != -100)
-
-            # 用 mask 屏蔽无效位置的概率
             token_log_probs = token_log_probs * non_pad_mask
-
-            # 计算有效长度，防止除零
             lengths = non_pad_mask.sum(dim=1).float().clamp(min=1)
-
-            # 计算平均对数概率
-            avg_log_probs = (token_log_probs.sum(dim=1) / lengths)
-
-            # certainty score
+            avg_log_probs = token_log_probs.sum(dim=1) / lengths
             certainty_scores = torch.exp(avg_log_probs)
 
-            # 2️⃣ Similarity score
+            # Similarity Score
             cosine_sims = F.cosine_similarity(image_final_embed, text_final_embed, dim=-1)
 
-            # 3️⃣ Alignment score (TODO: check if this is correct)
-            # alignment_scores = (certainty_scores + cosine_sims) / 2
-            alignment_scores = (certainty_scores + cosine_sims) / 2  # shape: [B]
-            alignment_scores = alignment_scores.view(-1, 1)  # reshape to [B, 1] for metric
+            # Alignment Score
+            alignment_scores = (certainty_scores + cosine_sims) / 2
+            alignment_scores = alignment_scores.view(-1, 1)
 
-            # print, store, sort these alignment_scores
             for idx1, idx2, score in zip(batch['idx1'], batch['idx2'], alignment_scores):
                 print(f"idx1: {idx1}, idx2: {idx2}, alignment_score: {score.item():.4f}")
+                verifier_outputs[idx1]['outputs'][idx2]['alignment_score'] = score.item()
 
-            verifier_outputs[idx1]['outputs'][idx2]['alignment_score'] = score.item()
-
-            # 4️⃣ calculate scores against metrics
-            # - alignment score (clip + cert)
-            verifier_acc_metric(alignment_scores, batch['v_labels'])
-            # verifier_mpk_metric(alignment_scores, batch['v_labels'])
+            # calculate metric against groundtruth labels
+            verifier_acc_metric(alignment_scores, batch['v_class'])
+            verifier_mpk_metric(alignment_scores, batch['v_class'])
 
 
-        if accelerator.num_processes > 1:
-            scores_tensor = torch.cat(verifier_acc_metric.scores, dim=0).to(accelerator.device).float()
-            gts_tensor = torch.cat(verifier_acc_metric.gts, dim=0).to(accelerator.device).float()
+        # ✅ 只 gather 当前 eval 得到的 scores，不要历史累积
+        local_scores = np.array(verifier_acc_metric.scores)
+        local_gts = np.array(verifier_acc_metric.gts)
 
-            gathered_scores = accelerator.gather_for_metrics(scores_tensor).tolist()
-            gathered_gts = accelerator.gather_for_metrics(gts_tensor).tolist()
+        scores_tensor = torch.from_numpy(local_scores).float().to(accelerator.device)
+        gts_tensor = torch.from_numpy(local_gts).float().to(accelerator.device)
 
-            verifier_acc_metric.scores = gathered_scores
-            verifier_acc_metric.gts = gathered_gts
+        gathered_scores = accelerator.gather_for_metrics(scores_tensor).cpu().numpy()
+        gathered_gts = accelerator.gather_for_metrics(gts_tensor).cpu().numpy()
 
+        print(f"[DEBUG] Gathered scores size: {gathered_scores.shape}, gts size: {gathered_gts.shape}")
 
-        # calculate verifier metrics
-        test_acc, test_recall = verifier_acc_metric.get_metric(inference_args.acc_thres, reset=True)
-        # mp1 = verifier_mpk_metric.get_metric(1)
+        # ✅ 用 gathered 数据计算 metric，**不再用 verifier_acc_metric.scores 里的历史数据**
+        pred = gathered_scores > inference_args.acc_thres
+        corrs = np.where(gathered_gts.astype(bool), pred, ~pred)
 
+        if len(corrs) == 0:
+            acc, precision, recall, f1 = 0.0, 0.0, 0.0, 0.0
+        else:
+            acc = np.sum(corrs) / len(corrs)
+            tp = np.sum((gathered_gts.astype(bool)) & pred)
+            fn = np.sum((gathered_gts.astype(bool)) & (~pred))
+            fp = np.sum((~gathered_gts.astype(bool)) & pred)
+            recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+            precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+            f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+        mpk = verifier_mpk_metric.get_metric(k=1)
+
+        # ✅ Reset metric buffers (清空避免下轮重复累积)
+        verifier_acc_metric.scores = []
+        verifier_acc_metric.gts = []
+        verifier_mpk_metric.scores = []
+        verifier_mpk_metric.gts = []
+
+        # ✅ 打印
         metrics = {
             '#question': n_question,
             '#solution_per_problem': per_problem_sampling_solution,
             '#total_solutions': len(dataset),
-            'accuracy': test_acc,
-            'recall': test_recall,
-            # 'mp1': mp1,
+            'accuracy': acc,
+            'precision': precision,
+            'recall': recall,
+            'f1': f1,
+            'mp1': mpk,
         }
         accelerator.print(metrics)
 
 
+        
 if __name__ == "__main__":
     main()
 

@@ -302,32 +302,68 @@ class AlignmentMetric:
         self.gts = []
 
     @torch.inference_mode()
-    def __call__(self, v_scores: torch.FloatTensor, v_labels: torch.LongTensor):
-        v_scores = v_scores.view(-1).tolist()  # [B]
-        v_labels = v_labels.view(-1).tolist()  # [B]，你的 label 是 per-output label
+    def __call__(self, v_scores, v_labels):
+        v_scores = torch.as_tensor(v_scores).view(-1).detach().cpu().tolist()
+        v_labels = torch.as_tensor(v_labels).view(-1).detach().cpu().tolist()
         self.scores.extend(v_scores)
         self.gts.extend(v_labels)
 
     def get_metric(self, thres: float=0.5, reset=True):
-        # clear
-        if reset:
-            self.scores = []
-            self.gts = []
-            self.gather = False
 
+        # pred: list of bool showing the prediction label
         pred = (np.array(self.scores) > thres)
+        # corrs: list of bool showing if the prediction label is correct
         corrs = np.where(np.array(self.gts).astype(bool), pred, ~pred)
         if len(corrs) == 0:
-            return 0.0, 0.0
+            return 0.0, 0.0, 0.0, 0.0
         else:
             acc = (sum(corrs) / len(corrs))
 
         tp = np.sum(np.array(self.gts) & pred)
         fn = np.sum(np.array(self.gts) & ~pred)
+        fp = np.sum((~np.array(self.gts).astype(bool)) & pred)
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
 
         # clear
         if reset:
             self.scores = []
             self.gts = []
-        return acc, recall
+        return acc, precision, recall, f1
+
+
+class AlignmentMPk:
+    def __init__(self, n_data: int, n_solution_per_problem: int):
+        self.n_data = n_data
+        self.n_solution_per_problem = n_solution_per_problem
+        self.scores = []
+        self.gts = []
+
+    @torch.inference_mode()
+    def __call__(self, v_scores, v_labels):
+        v_scores = torch.as_tensor(v_scores).view(-1).detach().cpu().tolist()
+        v_labels = torch.as_tensor(v_labels).view(-1).detach().cpu().tolist()
+        self.scores.extend(v_scores)
+        self.gts.extend(v_labels)
+
+    def get_metric(self, k: int = 1, reset=True):
+        # reshape scores & gts into [n_problems, n_solution_per_problem]
+        n_problems = self.n_data // self.n_solution_per_problem
+        scores = np.array(self.scores).reshape(n_problems, self.n_solution_per_problem)
+        gts = np.array(self.gts).reshape(n_problems, self.n_solution_per_problem)
+
+        precisions = []
+        for score_row, gt_row in zip(scores, gts):
+            sorted_idx = np.argsort(-score_row)  # sort descending
+            topk_idx = sorted_idx[:k]
+            precision_at_k = gt_row[topk_idx].sum() / k
+            precisions.append(precision_at_k)
+
+        mpk = np.mean(precisions) if len(precisions) > 0 else 0.0
+
+        if reset:
+            self.scores = []
+            self.gts = []
+
+        return mpk

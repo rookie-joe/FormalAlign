@@ -18,3 +18,10 @@
 ```
 DataArguments(data_dir='../data/clean_set/minimal.jsonl', target_set='test', generator_id='mistral', data_id='clean_set', verifier_id='mma_forml4_combined_v2', verifier_output_dir='/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/eval_results/mistral_mma_forml4_combined_v2/clean_set_minimal', generator_metric_dir='eval_results/gsm8k/generator_with_verifier', easy=True)
 ```
+
+```
+        # check why : 
+File "/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/utils/metrics.py", line 324, in get_metric
+                    corrs = np.where(gts, preds, ~preds)
+                ValueError: operands could not be broadcast together with shapes (2160,) (10,) (10,)
+```

@@ -583,10 +583,6 @@ class VerifierDataset(torch.utils.data.Dataset):
             qn_str=qn_str, qn_tokens=qn_tokens, sol_str=sol_str, sol_tokens=sol_tokens, v_class=v_class,
         )
 
-
-
-
-
 # def handleminif2f(data_list):
 #     formatted_list = []
 #     for item in data_list:
@@ -624,7 +620,6 @@ class VerifierClipDataset(torch.utils.data.Dataset):
         self.pad_token_id = tokenizer.pad_token_id
         self.eos_token_id = tokenizer.eos_token_id
 
-
         if per_problem_sampling_solution != -1:
             for example in self.examples:
                 example['outputs'] = example['outputs'][:per_problem_sampling_solution]
@@ -647,7 +642,6 @@ class VerifierClipDataset(torch.utils.data.Dataset):
         qns_str = [[ex["input"]] * len(ex["outputs"]) for ex in self.examples]
         solutions_str = [[outputs["response"] for outputs in ex["outputs"]] for ex in self.examples]
         v_classes = [[outputs["label"] == True for outputs in ex["outputs"]] for ex in self.examples]
-
 
         indices1 = self._flatten(indices1)
         indices2 = self._flatten(indices2)
