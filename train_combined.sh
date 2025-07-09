@@ -8,7 +8,7 @@ cd ./theorem_proving
 
 # Define the training configuration parameters
 generator_id=mistral
-verifierID=mma_forml4_combined
+verifierID=mma_forml4_combined_v2
 checkpoint_dir='mistralai/Mistral-7B-v0.1'  # Base model directory
 
 # Set the unique run identifier and output model directory
@@ -57,6 +57,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 /research/projects/trans_llm/Zeru_Shi/conda/envs/fo
   --save_total_limit 1 \
   --logging_dir None \
   --logging_steps 10 \
-  --fp16 True \
+  --fp16 False \
   --resume_from_checkpoint False \
   --seed 42 2>&1 | tee ${log_file} 
