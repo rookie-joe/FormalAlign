@@ -129,32 +129,22 @@ class Verifier_Clip(nn.Module):
             return_dict=True,
         )
 
-
+        # 1. llm loss: cross entropy loss of token prediction
         llm_logits = outputs.logits
         llm_loss = outputs.loss
+        
+        # 2. proj loss: contrastive loss of text and image embeddings
         llm_hidden_states = outputs.hidden_states
-
         # (batch_size, n_seq, embed_dim)
         proj_hidden_states = self.transform(llm_hidden_states[-1])
-
         bsz, n_seq, _ = proj_hidden_states.shape
         # (batch_size, n_seq, proj_dim)
         proj_output = self.project_head(self.dropout(proj_hidden_states))
-
-
         # Extract final embeddings for text and image inputs
         text_final_embed = proj_output[torch.arange(bsz), t_eoss.squeeze(), :]
-
         index = ((n_seq - 1) - attention_mask.flip(dims=[1]).float().argmax(1)).view(-1, 1)
-
         image_final_embed = proj_output[torch.arange(bsz), index.squeeze(), :]
-
-
-
-
-
         proj_loss =  self.loss_fn(text_final_embed, image_final_embed)
-
 
         # v_loss, loss = None, None
         # if v_labels is not None:
@@ -247,10 +237,6 @@ def save_best_verifier_checkpoint(accelerator: Accelerator,
 def build_verifier_clip(model_args: dataclass, training_args: dataclass, accelerator: Accelerator):
     backbone, tokenizer = build_model(model_args, training_args, accelerator)
     return Verifier_Clip(backbone, checkpoint_dir=model_args.model_name_or_path,clip_temperature = model_args.clip_temperature, project_dim = model_args.project_dim ).to(accelerator.device), tokenizer
-
-
-
-
 
 
 def load_verifier_clip(model_args: dataclass):

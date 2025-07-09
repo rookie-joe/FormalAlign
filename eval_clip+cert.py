@@ -1,9 +1,9 @@
 from utils.states import set_random_seed
-from utils.verifier_models import load_verifier, load_verifier_clip
+from utils.verifier_models import load_verifier_clip
 from utils.datasets import make_test_verifier_data_module, make_testing_dataloader, make_test_verifierclip_data_module
-from utils.metrics import VerifierClipClassificationAcc_original, VerifierClipMPk_original
+from utils.metrics import VerifierClipClassificationAcc_original, VerifierClipMPk_original, VerifierClassificationAcc, VerifierMPk_original
 from accelerate import Accelerator
-
+from torch.nn import functional as F
 
 
 import torch
@@ -98,8 +98,14 @@ def main():
 
         n_question = dataset.n_question
         per_problem_sampling_solution = dataset.per_problem_sampling_solution
-        verifier_acc_metric = VerifierClipClassificationAcc_original(n_data=len(dataset))
-        verifier_mpk_metric = VerifierClipMPk_original(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
+
+        # - eval_with_clip: only use clip (cosine simlarity) as alignment score
+        # verifier_acc_metric = VerifierClipClassificationAcc_original(n_data=len(dataset))
+        # verifier_mpk_metric = VerifierClipMPk_original(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
+
+        # - eval_with_clip+cert: use clip + cert (certainty score) as alignment score
+        verifier_acc_metric = VerifierClassificationAcc(n_data=len(dataset))
+        verifier_mpk_metric = VerifierMPk_original(n_data=len(dataset), n_solution_per_problem=per_problem_sampling_solution)
 
         dataloader = accelerator.prepare_data_loader(dataloader, device_placement=True)
 
@@ -125,71 +131,58 @@ def main():
         dataloader_iterator = tqdm(enumerate(dataloader), total=len(dataloader), desc='Evaluation') if accelerator.is_main_process else enumerate(dataloader)
         all_idxs1_list, all_idxs2_list, all_vscores_list, all_labels_list =  tuple([] for _ in range(4))
         for _, batch in dataloader_iterator:
+            # filter batch to only include necessary keys
             batch_input = {k: v for k, v in batch.items() if k in ('input_ids', 'attention_mask', 'labels', 'v_labels', 't_eoss')}
+            # get verifier output
             with torch.inference_mode(mode=True):
                 output = verifier(**batch_input)
                 # v_scores = output.v_scores
                 image_final_embed = output.image_final_embed
                 text_final_embed = output.text_final_embed
+                logits = output.logits
 
+            # 1️⃣ Certainty score
+            labels = batch['labels']  # shape: (B, T)
+            shift_logits = logits[:, :-1, :].contiguous()
+            shift_labels = labels[:, 1:].contiguous()
 
-            verifier_acc_metric(image_final_embed, text_final_embed, batch['v_labels'])
-            verifier_mpk_metric(image_final_embed, text_final_embed, batch['v_labels'])
-            # generator_acc_metric(v_scores, batch['v_labels'])
+            # log_softmax + gather target token prob
+            log_probs = F.log_softmax(shift_logits, dim=-1)
+            token_log_probs = torch.gather(log_probs, -1, shift_labels.unsqueeze(-1)).squeeze(-1)
 
-            idx1, idx2, qn_tokens, sol_tokens, v_labels = tuple(batch[key] for key in ("idx1", "idx2", "qn_tokens", "sol_tokens", 'v_labels'))
-            # sol_vscores, raw_vscores = extract_sol_vscores(qn_tokens, sol_tokens, v_scores, v_labels)
+            # mask padding (if there is padding_token_id)
+            if tokenizer.pad_token_id is not None:
+                non_pad_mask = shift_labels.ne(tokenizer.pad_token_id)
+                token_log_probs = token_log_probs * non_pad_mask
 
-        #     for obj, container in [
-        #         (idx1, all_idxs1_list),
-        #         (idx2, all_idxs2_list),
-        #         # (sol_vscores, all_vscores_list),
-        #         (raw_vscores, all_labels_list),
-        #     ]:
-        #         container.extend(obj)
+                # get valid token number
+                lengths = non_pad_mask.sum(dim=1).float().clamp(min=1)
+            else:
+                lengths = torch.ones(token_log_probs.size(0), device=token_log_probs.device) * token_log_probs.size(1)
 
+            avg_log_probs = (token_log_probs.sum(dim=1) / lengths)  # average log-prob per sequence
+            certainty_scores = torch.exp(avg_log_probs)  # exponent
 
-        # gc.collect(); torch.cuda.empty_cache()
+            # 2️⃣ Similarity score
+            cosine_sims = F.cosine_similarity(image_final_embed, text_final_embed, dim=-1)
 
+            # 3️⃣ Alignment score
+            alignment_scores = (certainty_scores + cosine_sims) / 2
 
-        # # gather
-        # if accelerator.num_processes != 1:
-        #     all_idxs1_gather, all_idxs2_gather, all_vscores_gather, all_labels_gather  =  tuple([None] * dist.get_world_size() for _ in range(4))
-        #     for obj, container in [
-        #         (all_idxs1_list, all_idxs1_gather),
-        #         (all_idxs2_list, all_idxs2_gather),
-        #         (all_vscores_list, all_vscores_gather),
-        #         (all_labels_list, all_labels_gather),
-        #     ]:
-        #         dist.all_gather_object(container, obj)
+            # print, store, sort these alignment_scores
+            for idx1, idx2, score in zip(batch['idx1'], batch['idx2'], alignment_scores):
+                print(f"idx1: {idx1.item()}, idx2: {idx2.item()}, alignment_score: {score.item():.4f}")
+            verifier_outputs[idx1]['outputs'][idx2]['alignment_score'] = score.item()
 
-        #     all_idxs1_gather, all_idxs2_gather, all_vscores_gather, all_labels_gather = tuple([item for sublist in container for item in sublist]
-        #                                                                    for container in [all_idxs1_gather, all_idxs2_gather, all_vscores_gather, all_labels_gather])
-        # else:
-        #     all_idxs1_gather, all_idxs2_gather, all_vscores_gather, all_labels_gather = all_idxs1_list, all_idxs2_list, all_vscores_list, all_labels_gather
-
-
-        # # record
-        # for idx1, idx2, sol_vscores, raw_vscores in zip(all_idxs1_gather, all_idxs2_gather, all_vscores_gather, all_labels_gather):
-        #     if 'vscores' in verifier_outputs[idx1]['outputs'][idx2]:
-        #         continue
-
-        #     verifier_outputs[idx1]['outputs'][idx2]['vscores'] = sol_vscores
-        #     verifier_outputs[idx1]['outputs'][idx2]['raw vscores'] =  raw_vscores
-        #     # verifier_outputs[idx1]['outputs'][idx2]['v_label'] =
-
-
-        # # save outputs
-        # if accelerator.is_main_process:
-        #     os.makedirs(os.path.dirname(verifier_outputs_file), exist_ok=True)
-        #     with open(verifier_outputs_file, 'w') as fp:
-        #         fp.writelines([json.dumps(verifier_outputs[i]) + '\n'  for i in range(len(verifier_outputs))])
-        #     print(f"+ [Save] Save Outputs to {verifier_outputs_file}")
-
+            # 4️⃣ calculate scores against metrics
+            # - alignment score (clip + cert)
+            verifier_acc_metric(alignment_scores, batch['v_labels'])
+            verifier_mpk_metric(alignment_scores, batch['v_labels'])
 
         # calculate verifier metrics
-        test_acc, test_recall = verifier_acc_metric.get_metric(inference_args.acc_thres)
+        test_acc, test_recall = verifier_align_metric.get_metric(inference_args.acc_thres)
         mp1 = verifier_mpk_metric.get_metric(1)
+
         metrics = {
             '#question': n_question,
             '#solution_per_problem': per_problem_sampling_solution,
@@ -199,25 +192,6 @@ def main():
             'mp1': mp1,
         }
         accelerator.print(metrics)
-
-
-        # # calculate generator metrics
-        # n_list = list(range(5, per_problem_sampling_solution + 1, 5))
-        # df = pd.DataFrame(columns=['acc'], index=n_list)
-        # df.columns.name = "n_solution"
-        # for i in n_list:
-        #     df.loc[i] = generator_acc_metric.get_metric(i, reset=False)
-
-        # accelerator.print(df)
-
-        # # save metrics
-        # if accelerator.is_main_process:
-        #     os.makedirs(os.path.dirname(verifier_metrics_file), exist_ok=True)
-        #     json.dump(metrics, open(verifier_metrics_file,'w'), indent=4, ensure_ascii=False)
-        #     print(f"+ [Save] Save Verifier Metrics to {verifier_metrics_file}")
-
-        #     df.to_csv(generator_metrics_file, index_label=df.columns.name)
-        #     print(f"+ [Save] Save Generator Metrics to {generator_metrics_file}")
 
 
 if __name__ == "__main__":

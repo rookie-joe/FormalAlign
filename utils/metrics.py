@@ -110,8 +110,6 @@ class VerifierClipClassificationAcc_original:
         # Compute the similarity matrix
         similarity_matrix = torch.matmul(text_embeddings, image_embeddings.t())
         matching_similarity_scores = torch.diag(similarity_matrix)
-
-
         
         self.scores.append(matching_similarity_scores.tolist())
         self.gts.append(gts.tolist())
@@ -245,11 +243,6 @@ class VerifierMPk_original:
         
         # preds = v_scores.squeeze(-1).gather(1, index).squeeze()
         gts = v_labels.gather(1, index).squeeze()
-
-
-
-
-        
         self.preds.append(matching_similarity_scores.tolist())
         self.gts.append(gts.tolist())
 
