@@ -11,4 +11,5 @@
     - `/checkpoints/mistral/formalalign_reproduce_mma_forml4_combined_v1`: 用`train_alignment`训练的模型，过拟合。失败。
 
 - reproduction v2:
-    - 
+    - `train_clip`: 原版（with minimal change）
+    - `eval_clip+cert`: alignnment score = embedding simlarity + certainty
