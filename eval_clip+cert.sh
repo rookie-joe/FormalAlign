@@ -14,9 +14,9 @@ final_id=formalalign_reproduce
 # Set the model checkpoint directory (this should be your trained model path)
 checkpoint_dir=/research/projects/trans_llm/Zeru_Shi/alisa/FormalAlign/checkpoints/${generator_id}/${final_id}_${verifierID}
 
-data_id=minif2f
-set_id=valid_misalignment
-test_data_dir=../data/${data_id}/misalignment/${set_id}.jsonl
+data_id=clean_set
+set_id=minimal_2
+test_data_dir=../data/${data_id}/${set_id}.jsonl
 # assert len(self.examples[0]['outputs']) >= per_problem_sampling_solution
 
 # Set output directory

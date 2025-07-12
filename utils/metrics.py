@@ -294,7 +294,7 @@ class VerifierMPk_original:
         return mpk
 
 
-
+# newly added
 class AlignmentMetric:
     def __init__(self, n_data: int):
         self.n_data = n_data
@@ -332,7 +332,7 @@ class AlignmentMetric:
             self.gts = []
         return acc, precision, recall, f1
 
-
+# newly added
 class AlignmentMPk:
     def __init__(self, n_data: int, n_solution_per_problem: int):
         self.n_data = n_data
